@@ -20,6 +20,9 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.tfg.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     
     private ActivityMainBinding binding;
@@ -34,10 +37,17 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupWithNavController(binding.botNavView, navController);
         
+        // Array de listas para controlar el botNavView
+        List<Integer> hideBotNavViewList = Arrays.asList(
+                R.id.signinfragment, 
+                R.id.signupfragment, 
+                R.id.editprofilefragment
+        );
+        
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
             if(event == Lifecycle.Event.ON_RESUME){
                 navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                    if(destination.getId() == R.id.signinfragment || destination.getId() == R.id.signupfragment){
+                    if(hideBotNavViewList.contains(destination.getId())){
                         binding.botNavView.setVisibility(View.GONE);
                     }else{
                         binding.botNavView.setVisibility(View.VISIBLE);

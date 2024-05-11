@@ -2,8 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    
-    <!-- === COLORS ACCOUNT === -->
-    <color name="rojo_boton_logout">#b82c3a</color>
+    <color name="rojo_boton">#b82c3a</color>
     <color name="azul_boton_edit">#2c89b8</color>
+    <color name="verde_boton_aceptar">#20E634</color>
 </resources>

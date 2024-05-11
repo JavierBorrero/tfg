@@ -8,12 +8,15 @@ public class Usuario {
     
     public String email;
     
+    public int telefono;
+    
     public Usuario(){}
     
-    public Usuario(String nombre, String apellido, String email){
+    public Usuario(String nombre, String apellido, String email, int telefono){
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
+        this.telefono = telefono;
     }
 
     public String getNombre() {
@@ -38,5 +41,13 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(int telefono) {
+        this.telefono = telefono;
     }
 }

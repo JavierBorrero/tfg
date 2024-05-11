@@ -27,11 +27,16 @@
     <string name="hint_foto_post">Selecciona una imagen…</string>
     <string name="hint_numero_post">Número de personas…</string>
     <string name="text_checkbox_post">Material necesario</string>
-    
+
     <!-- === STRINGS ACCOUNT -->
     <string name="btn_logout">Log out</string>
     <string name="btn_edit">Editar Perfil</string>
     <string name="text_email">email</string>
     <string name="text_nombre">nombre</string>
     <string name="text_apellidos">apellidos</string>
+    
+    <!-- === STRINGS EDITPROFILE === -->
+    <string name="hint_nombre_edit_profile">Nombre…</string>
+    <string name="hint_apellidos_edit_profile">Apellidos…</string>
+    <string name="hint_telefono_edit_profile">Telefono…</string>
 </resources>

@@ -22,6 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="240dp"
+        android:textSize="20sp"
         android:text="@string/text_email"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:textSize="20sp"
         android:text="@string/text_nombre"
         app:layout_constraintTop_toBottomOf="@+id/textEmail"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,30 +44,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:textSize="20sp"
         android:text="@string/text_apellidos"
         app:layout_constraintTop_toBottomOf="@+id/textNombre"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:backgroundTint="@color/rojo_boton_logout"
-        android:text="@string/btn_logout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <Button
         android:id="@+id/btnEditProfile"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="@color/azul_boton_edit"
         android:text="@string/btn_edit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textApellidos" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/rojo_boton"
+        android:text="@string/btn_logout"
+        app:layout_constraintTop_toBottomOf="@id/btnEditProfile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    
 
     
 

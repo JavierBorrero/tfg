@@ -16,6 +16,7 @@ import com.example.tfg.databinding.FragmentAccountBinding;
 import com.example.tfg.models.Usuario;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -78,14 +79,20 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         });
         
         binding.btnLogout.setOnClickListener(this);
+        binding.btnEditProfile.setOnClickListener(this);
     }
-
+    
     @Override
     public void onClick(View view) {
         int i = view.getId();
+        
         if(i == R.id.btnLogout){
             FirebaseAuth.getInstance().signOut();
             NavHostFragment.findNavController(this).navigate(R.id.signinfragment);
+        }
+        
+        if(i == R.id.btnEditProfile){
+            NavHostFragment.findNavController(this).navigate(R.id.editprofilefragment);
         }
     }
 }
