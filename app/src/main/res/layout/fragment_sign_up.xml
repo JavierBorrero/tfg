@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/fieldNombre"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
+        android:maxLines="1"
+        android:hint="@string/hint_nombre"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/fieldApellido"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:maxLines="1"
+        android:hint="@string/hint_apellido"
+        app:layout_constraintTop_toBottomOf="@+id/fieldNombre"
+        app:layout_constraintStart_toStartOf="@+id/fieldNombre" />
+
+    <EditText
+        android:id="@+id/fieldCorreo"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:maxLines="1"
+        android:hint="@string/hint_email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintTop_toBottomOf="@+id/fieldApellido"
+        app:layout_constraintStart_toStartOf="@+id/fieldApellido" />
+
+    <EditText
+        android:id="@+id/fieldContrasena"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:maxLines="1"
+        android:hint="@string/hint_password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@+id/fieldCorreo"
+        app:layout_constraintStart_toStartOf="@+id/fieldCorreo" />
+
+    <EditText
+        android:id="@+id/fieldConfirmarContrasena"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:maxLines="1"
+        android:hint="@string/hint_confirm_password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@+id/fieldContrasena"
+        app:layout_constraintStart_toStartOf="@+id/fieldContrasena" />
+
+    <Button
+        android:id="@+id/botonRegistro"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/boton_registro"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/fieldConfirmarContrasena"
+        app:layout_constraintStart_toStartOf="@+id/fieldConfirmarContrasena" />
+
+    <Button
+        android:id="@+id/botonIrLogin"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/boton_ir_login"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@+id/botonRegistro"
+        app:layout_constraintStart_toStartOf="@+id/botonRegistro" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

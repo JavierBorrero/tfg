@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- === COLORS ACCOUNT === -->
+    <color name="rojo_boton_logout">#b82c3a</color>
+    <color name="azul_boton_edit">#2c89b8</color>
+</resources>

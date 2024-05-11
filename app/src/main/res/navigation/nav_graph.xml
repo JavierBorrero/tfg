@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/signinfragment">
+    
+    <fragment
+        android:id="@+id/postsfragment"
+        android:name="com.example.tfg.PostsFragment"
+        android:label="PostsFragment"
+        tools:layout="@layout/fragment_posts" />
+    
+    <fragment
+        android:id="@+id/signinfragment"
+        android:name="com.example.tfg.SignInFragment"
+        android:label="SignInFragment"
+        tools:layout="@layout/fragment_sign_in" />
+    
+    <fragment
+        android:id="@+id/signupfragment"
+        android:name="com.example.tfg.SignUpFragment"
+        android:label="SignUpFragment"
+        tools:layout="@layout/fragment_sign_up" />
+    
+    <fragment
+        android:id="@+id/newpostfragment"
+        android:name="com.example.tfg.NewPostFragment"
+        android:label="NewPostFragment"
+        tools:layout="@layout/fragment_new_post" />
+    
+    <fragment
+        android:id="@+id/accountfragment"
+        android:name="com.example.tfg.AccountFragment"
+        android:label="AccountFragment"
+        tools:layout="@layout/fragment_account" />
+
+</navigation>

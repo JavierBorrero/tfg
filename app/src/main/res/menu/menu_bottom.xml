@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@id/postsfragment"
+        android:icon="@drawable/icon_home"
+        android:title="@string/title_posts" />
+    
+    <item
+        android:id="@id/accountfragment"
+        android:icon="@drawable/icon_account"
+        android:title="@string/title_account" />
+</menu>

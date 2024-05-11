@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "539729997524",
+    "project_id": "tfgdam-f100e",
+    "storage_bucket": "tfgdam-f100e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:539729997524:android:61c6f27d8233a430929541",
+        "android_client_info": {
+          "package_name": "com.example.tfg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEst44QY80kR8J3y3JDhGhyN11cTn--00"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
