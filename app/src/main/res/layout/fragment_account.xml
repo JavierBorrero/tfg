@@ -4,18 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    
-    <ImageView
-        android:id="@+id/profilePic"
+
+    <androidx.cardview.widget.CardView
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_marginTop="30dp"
-        android:src="@drawable/icon_person_profile"
-        android:scaleType="centerCrop"
-        android:background="@drawable/circular_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:cardCornerRadius="100dp">
+
+        <ImageView
+            android:id="@+id/profilePic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/icon_person_profile"
+            android:scaleType="centerCrop"
+            android:background="@drawable/circular_background"
+            android:foreground="@drawable/circular_mask" />
+
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/textEmail"
@@ -52,10 +60,10 @@
 
     <Button
         android:id="@+id/btnEditProfile"
-        android:layout_width="140dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="@color/azul_boton_edit"
+        android:layout_marginTop="70dp"
+        android:backgroundTint="@color/azul_boton"
         android:text="@string/btn_edit"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,17 +71,23 @@
 
     <Button
         android:id="@+id/btnLogout"
-        android:layout_width="140dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:backgroundTint="@color/rojo_boton"
+        android:backgroundTint="@color/morado_boton"
         android:text="@string/btn_logout"
         app:layout_constraintTop_toBottomOf="@id/btnEditProfile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
     
-
+    <Button
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/rojo_boton"
+        android:text="@string/btn_eliminar"
+        app:layout_constraintTop_toBottomOf="@id/btnLogout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
     
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,8 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="130dp"
-        android:maxLines="1"
+        android:maxLength="30"
+        android:inputType="text"
         android:hint="@string/hint_nombre"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,28 +21,38 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:maxLines="1"
+        android:maxLength="30"
+        android:inputType="text"
         android:hint="@string/hint_apellido"
         app:layout_constraintTop_toBottomOf="@+id/fieldNombre"
         app:layout_constraintStart_toStartOf="@+id/fieldNombre" />
+    
+    <EditText
+        android:id="@+id/fieldTelefono"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:maxLength="9"
+        android:hint="@string/hint_telefono"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/fieldApellido"
+        app:layout_constraintStart_toStartOf="@id/fieldApellido" />
 
     <EditText
         android:id="@+id/fieldCorreo"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:maxLines="1"
         android:hint="@string/hint_email"
         android:inputType="textEmailAddress"
-        app:layout_constraintTop_toBottomOf="@+id/fieldApellido"
-        app:layout_constraintStart_toStartOf="@+id/fieldApellido" />
+        app:layout_constraintTop_toBottomOf="@+id/fieldTelefono"
+        app:layout_constraintStart_toStartOf="@+id/fieldTelefono" />
 
     <EditText
         android:id="@+id/fieldContrasena"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:maxLines="1"
         android:hint="@string/hint_password"
         android:inputType="textPassword"
         app:layout_constraintTop_toBottomOf="@+id/fieldCorreo"
@@ -52,7 +63,6 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:maxLines="1"
         android:hint="@string/hint_confirm_password"
         android:inputType="textPassword"
         app:layout_constraintTop_toBottomOf="@+id/fieldContrasena"

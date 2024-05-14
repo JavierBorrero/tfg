@@ -30,12 +30,12 @@ import java.util.regex.Pattern;
 
 public class SignUpFragment extends Fragment implements View.OnClickListener {
     
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
+    FirebaseFirestore db;
     private FragmentSignUpBinding binding;
 
-    EditText nombre, apellido, correo, contrasena, confirmarContrasena;
+    EditText nombre, apellido, telefono, correo, contrasena, confirmarContrasena;
     
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Nullable
     @Override
@@ -48,13 +48,14 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-
-        // Click listeners
+        db = FirebaseFirestore.getInstance();
+        
         binding.botonRegistro.setOnClickListener(this);
         binding.botonIrLogin.setOnClickListener(this);
 
         nombre = binding.fieldNombre;
         apellido = binding.fieldApellido;
+        telefono = binding.fieldTelefono;
         correo = binding.fieldCorreo;
         contrasena = binding.fieldContrasena;
         confirmarContrasena = binding.fieldConfirmarContrasena;
@@ -76,6 +77,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
         String cadenaNombre = nombre.getText().toString();
         String cadenaApellido = apellido.getText().toString();
+        int numTelefono = Integer.parseInt(telefono.getText().toString());
         String cadenaCorreo = correo.getText().toString();
         String cadenaContrasena = contrasena.getText().toString();
 
@@ -83,7 +85,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    writeNewUser(cadenaNombre, cadenaApellido, cadenaCorreo);
+                    writeNewUser(cadenaNombre, cadenaApellido, numTelefono, cadenaCorreo);
                     onAuthSuccess(task.getResult().getUser());
                 }else{
                     Toast.makeText(getContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -115,6 +117,14 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             validar = false;
         }else{
             apellido.setError(null);
+        }
+        
+        // Comprobar que el campo telefono no esta vacio
+        if(telefono.getText().toString().isEmpty()){
+            telefono.setError("Telefono vacio");
+            validar = false;
+        }else{
+            telefono.setError(null);
         }
 
         // Comprobar que el campo email no esta vacio
@@ -189,7 +199,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         - Caracteres especiales
      */
     private static boolean validarPassword(String password){
-        String passwordRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!¡?¿*()])[A-Za-z\\d@#$%^&+=!¡?¿*()]{12,}$\n";
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>._]).{12,}$";
 
         Pattern pat = Pattern.compile(passwordRegex);
 
@@ -200,21 +210,29 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         return pat.matcher(password).matches();
     }
 
-    private void writeNewUser(String nombre, String apellido, String email){
+    private void writeNewUser(String nombre, String apellido, int telefono, String email){
+        // Guardar los datos del usuario
         Map<String, Object> user = new HashMap<>();
         user.put("nombre", nombre);
         user.put("apellido", apellido);
+        user.put("telefono", telefono);
         user.put("email", email);
         
+        /*
+            Para que el documento tenga un nombre entendible y facil de utilizar
+            usamos el email hasta el @
+         */
         int atIndex = email.indexOf('@');
         String documentName = email.substring(0, atIndex);
         
-        db.collection("usuarios").document(documentName)
+        String userId = mAuth.getCurrentUser().getUid();
+        
+        db.collection("usuarios").document(userId)
                 .set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Toast.makeText(getContext(), "Creado con exito", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Usuario creado con exito", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

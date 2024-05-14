@@ -67,7 +67,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    onAuthSuccess(task.getResult().getUser());
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    onAuthSuccess(user);
                 }else{
                     Toast.makeText(getContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }

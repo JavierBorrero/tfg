@@ -14,6 +14,7 @@
     <!-- === STRINGS SIGNUP === -->
     <string name="hint_nombre">Nombre</string>
     <string name="hint_apellido">Apellidos</string>
+    <string name="hint_telefono">Telefono</string>
     <string name="hint_confirm_password">Confirmar Contraseña</string>
     <string name="boton_registro">Registrarme</string>
     <string name="boton_ir_login">Ir al Inicio de Sesion</string>
@@ -29,8 +30,9 @@
     <string name="text_checkbox_post">Material necesario</string>
 
     <!-- === STRINGS ACCOUNT -->
-    <string name="btn_logout">Log out</string>
+    <string name="btn_logout">Cerrar sesion</string>
     <string name="btn_edit">Editar Perfil</string>
+    <string name="btn_eliminar">Eliminar mi perfil</string>
     <string name="text_email">email</string>
     <string name="text_nombre">nombre</string>
     <string name="text_apellidos">apellidos</string>
@@ -39,4 +41,6 @@
     <string name="hint_nombre_edit_profile">Nombre…</string>
     <string name="hint_apellidos_edit_profile">Apellidos…</string>
     <string name="hint_telefono_edit_profile">Telefono…</string>
+    <string name="boton_cancelar">Cancelar</string>
+    <string name="boton_aceptar">Aceptar</string>
 </resources>
