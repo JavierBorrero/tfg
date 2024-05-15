@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@id/fieldDescripcion" />
 
     <EditText
-        android:id="@+id/fieldFecha"
+        android:id="@+id/fieldFechaHora"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -53,24 +53,23 @@
         android:layout_marginRight="16dp"
         android:clickable="true"
         android:focusable="false"
-        android:hint="@string/hint_fecha_post"
-        app:layout_constraintEnd_toEndOf="@+id/fieldLocalizacion"
-        app:layout_constraintStart_toStartOf="@id/fieldLocalizacion"
-        app:layout_constraintTop_toBottomOf="@id/fieldLocalizacion" />
+        android:hint="@string/hint_fecha_hora" 
+        app:layout_constraintEnd_toEndOf="@+id/fieldLocalizacion" 
+        app:layout_constraintStart_toStartOf="@+id/fieldLocalizacion"
+        app:layout_constraintTop_toBottomOf="@+id/fieldLocalizacion"/>
 
     <EditText
-        android:id="@+id/fieldHora"
+        android:id="@+id/fieldNumeroPersonas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="12dp"
         android:layout_marginRight="16dp"
-        android:clickable="true"
-        android:focusable="false"
-        android:hint="@string/hint_hora_post"
-        app:layout_constraintEnd_toEndOf="@id/fieldFecha"
-        app:layout_constraintStart_toStartOf="@id/fieldFecha"
-        app:layout_constraintTop_toBottomOf="@id/fieldFecha" />
+        android:hint="@string/hint_numero_post"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="@+id/fieldFechaHora"
+        app:layout_constraintStart_toStartOf="@+id/fieldFechaHora"
+        app:layout_constraintTop_toBottomOf="@+id/fieldFechaHora" />
 
     <EditText
         android:id="@+id/fieldImagen"
@@ -82,22 +81,9 @@
         android:clickable="true"
         android:focusable="false"
         android:hint="@string/hint_foto_post"
-        app:layout_constraintEnd_toEndOf="@id/fieldHora"
-        app:layout_constraintStart_toStartOf="@id/fieldHora"
-        app:layout_constraintTop_toBottomOf="@id/fieldHora" />
-
-    <EditText
-        android:id="@+id/fieldNumeroPersonas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginRight="16dp"
-        android:hint="@string/hint_numero_post"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@id/fieldImagen"
-        app:layout_constraintStart_toStartOf="@id/fieldImagen"
-        app:layout_constraintTop_toBottomOf="@id/fieldImagen" />
+        app:layout_constraintEnd_toEndOf="@+id/fieldNumeroPersonas"
+        app:layout_constraintStart_toStartOf="@+id/fieldNumeroPersonas"
+        app:layout_constraintTop_toBottomOf="@+id/fieldNumeroPersonas" />
 
     <CheckBox
         android:id="@+id/fieldMaterial"
@@ -105,9 +91,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/text_checkbox_post"
-        app:layout_constraintStart_toStartOf="@id/fieldNumeroPersonas"
-        app:layout_constraintTop_toBottomOf="@id/fieldNumeroPersonas" />
-
+        app:layout_constraintStart_toStartOf="@+id/fieldImagen"
+        app:layout_constraintTop_toBottomOf="@+id/fieldImagen" />
 
     <ImageView
         android:id="@+id/fotoPrevia"

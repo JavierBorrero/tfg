@@ -54,7 +54,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     
     ImageView imagen;
     
-    String path, userEmail, documentName;
+    String userId, userEmail;
     
     Usuario usuario;
     
@@ -98,11 +98,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         telefono = binding.fieldTelefono;
         imagen = binding.profilePic;
         
-        userEmail = mAuth.getCurrentUser().getEmail();
-        int atIndex = userEmail.indexOf('@');
-        documentName = userEmail.substring(0, atIndex);
+        userId = mAuth.getCurrentUser().getUid();
         
-        obtenerDatosUsuario(documentName);
+        obtenerDatosUsuario(userId);
         
         binding.btnAceptar.setOnClickListener(this);
         binding.btnCancelar.setOnClickListener(this);
@@ -111,9 +109,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     }
     
     // === OBTENER LOS DATOS DEL USUARIO ===
-    private void obtenerDatosUsuario(String docName){
+    private void obtenerDatosUsuario(String usuarioId){
 
-        DocumentReference docRef = db.collection("usuarios").document(docName);
+        DocumentReference docRef = db.collection("usuarios").document(usuarioId);
 
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -177,19 +175,19 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         String cadenaApellido = apellidos.getText().toString();
         int numTelefono = Integer.parseInt(telefono.getText().toString());
         
-        editarPerfil(documentName, userEmail, cadenaNombre, cadenaApellido, numTelefono);
+        editarPerfil(userId, userEmail, cadenaNombre, cadenaApellido, numTelefono);
         editarFotoPerfil(image);
         
     }
     
-    private void editarPerfil(String docName, String email, String nombre, String apellido, int telefono){
+    private void editarPerfil(String usuarioId, String email, String nombre, String apellido, int telefono){
         Map<String, Object> user = new HashMap<>();
         user.put("email", email);
         user.put("nombre", nombre);
         user.put("apellido", apellido);
         user.put("telefono", telefono);
         
-        db.collection("usuarios").document(docName)
+        db.collection("usuarios").document(usuarioId)
                 .set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -209,7 +207,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     
     private void editarFotoPerfil(Uri file){
         
-        StorageReference reference = storageReference.child("images/"+documentName+"/pfp/");
+        StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
         reference.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

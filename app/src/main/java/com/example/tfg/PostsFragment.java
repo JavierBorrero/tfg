@@ -40,7 +40,7 @@ public class PostsFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
-
+    
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentPostsBinding.inflate(inflater, container, false);
@@ -57,6 +57,7 @@ public class PostsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         int i = view.getId();
+        
         if(i == R.id.btnNewPost){
             NavHostFragment.findNavController(this).navigate(R.id.newpostfragment);
         }

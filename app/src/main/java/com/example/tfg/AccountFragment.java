@@ -37,6 +37,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     TextView email, nombre, apellidos;
     
     ImageView imagen;
+    
+    String userId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,12 +73,10 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     }
     
     private void obtenerDatosUsuario(){
-        // Obtener el email del usuario autenticado para obtener el nombre del documento y obtener sus datos
-        String userEmail = mAuth.getCurrentUser().getEmail();
-        int atIndex = userEmail.indexOf('@');
-        String documentName = userEmail.substring(0, atIndex);
+        
+        userId = mAuth.getCurrentUser().getUid();
 
-        DocumentReference docRef = db.collection("usuarios").document(documentName);
+        DocumentReference docRef = db.collection("usuarios").document(userId);
 
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -95,7 +95,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
             }
         });
         
-        StorageReference reference = storageReference.child("images/"+documentName+"/pfp/");
+        StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
         
         final long megabytes = 5 * 1024 * 1024;
         reference.getBytes(megabytes).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -104,13 +104,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 imagen.setImageBitmap(bitmap);
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
-            }
         });
-        
     }
     
     @Override
