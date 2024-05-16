@@ -34,6 +34,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -224,6 +226,8 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
                 timePickerDialog.show();
             }
         }, mYear, mMonth, mDay);
+        
+        datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
         datePickerDialog.show();
         
     }
@@ -244,12 +248,15 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         int numPersonas = Integer.parseInt(personas.getText().toString());
         boolean materialNecesario = material.isChecked();
         
-        datosPost(userId, cadenaTitulo, cadenaDescripcion, cadenaLocalizacion, numPersonas, materialNecesario);
-        fotoPost(image);
+        if(image != null){
+            datosPostImagen(userId, cadenaTitulo, cadenaDescripcion, cadenaLocalizacion, numPersonas, materialNecesario, image);
+        }else{
+            datosPost(userId, cadenaTitulo, cadenaDescripcion, cadenaLocalizacion, numPersonas, materialNecesario, null);
+        }
         
     }
     
-    private void datosPost(String usuarioId, String titulo, String descripcion, String localizacion, int personas, boolean material){
+    private void datosPost(String usuarioId, String titulo, String descripcion, String localizacion, int personas, boolean material, @Nullable String imageUrl){
         Map<String, Object> post = new HashMap<>();
         post.put("userId", usuarioId);
         post.put("titulo", titulo);
@@ -258,8 +265,12 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         post.put("numeroPersonas", personas);
         post.put("materialNecesario", material);
         post.put("fecha", firebaseTimeStamp);
+        
+        if(imageUrl != null){
+            post.put("imageUrl", imageUrl);
+        }
 
-        db.collection("posts").document(userId)
+        db.collection("posts").document()
                 .set(post)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -275,10 +286,28 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
                 });
     }
 
-    private void fotoPost(Uri file){
+    private void datosPostImagen(String usuarioId, String titulo, String descripcion, String localizacion, int personas, boolean material, @Nullable Uri file){
         if(file != null){
-            StorageReference reference = storageReference.child("images/"+userId+"/user_posts/"+firebaseTimeStamp);
-            reference.putFile(file).addOnFailureListener(new OnFailureListener() {
+            StorageReference reference = storageReference.child("images/"+userId+"/user_posts/"+file.getLastPathSegment());
+            reference.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String imageUrl = uri.toString();
+                            datosPost(usuarioId, titulo, descripcion, localizacion, personas, material, imageUrl);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            // Guardar el post sin imagen
+                            datosPost(usuarioId, titulo, descripcion, localizacion, personas, material, null);
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();

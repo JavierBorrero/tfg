@@ -54,7 +54,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     
     ImageView imagen;
     
-    String userId, userEmail;
+    String userId;
     
     Usuario usuario;
     
@@ -90,15 +90,15 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        
         storageReference = FirebaseStorage.getInstance().getReference();
+        userId = mAuth.getCurrentUser().getUid();
+        
         
         nombre = binding.fieldNombre;
         apellidos = binding.fieldApellido;
         telefono = binding.fieldTelefono;
         imagen = binding.profilePic;
         
-        userId = mAuth.getCurrentUser().getUid();
         
         obtenerDatosUsuario(userId);
         
@@ -175,20 +175,25 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         String cadenaApellido = apellidos.getText().toString();
         int numTelefono = Integer.parseInt(telefono.getText().toString());
         
-        editarPerfil(userId, userEmail, cadenaNombre, cadenaApellido, numTelefono);
-        editarFotoPerfil(image);
-        
+        if(image != null){
+            editarConFotoPerfil(userId, cadenaNombre, cadenaApellido, numTelefono, image);
+        }else{
+            editarConFotoPerfil(userId, cadenaNombre, cadenaApellido, numTelefono, null);
+        }
     }
     
-    private void editarPerfil(String usuarioId, String email, String nombre, String apellido, int telefono){
+    private void editarPerfil(String usuarioId, String nombre, String apellido, int telefono, @Nullable String imageUrl){
         Map<String, Object> user = new HashMap<>();
-        user.put("email", email);
         user.put("nombre", nombre);
         user.put("apellido", apellido);
         user.put("telefono", telefono);
         
+        if(imageUrl != null){
+            user.put("imagePfpUrl", imageUrl);
+        }
+        
         db.collection("usuarios").document(usuarioId)
-                .set(user)
+                .update(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -205,21 +210,34 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         
     }
     
-    private void editarFotoPerfil(Uri file){
-        
-        StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
-        reference.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(getContext(), "todo correcto", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        
+    private void editarConFotoPerfil(String usuarioId, String nombre, String apellido, int telefono, @Nullable Uri file){
+        if(file != null){
+            StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
+            reference.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String imageUrl = uri.toString();
+                            editarPerfil(usuarioId, nombre, apellido, telefono, imageUrl);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            // Editar el perfil sin foto
+                            editarPerfil(usuarioId, nombre, apellido, telefono, null);
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
     
     @Override

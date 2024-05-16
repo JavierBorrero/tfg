@@ -218,13 +218,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         user.put("telefono", telefono);
         user.put("email", email);
         
-        /*
-            Para que el documento tenga un nombre entendible y facil de utilizar
-            usamos el email hasta el @
-         */
-        int atIndex = email.indexOf('@');
-        String documentName = email.substring(0, atIndex);
-        
         String userId = mAuth.getCurrentUser().getUid();
         
         db.collection("usuarios").document(userId)
