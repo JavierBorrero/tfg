@@ -10,12 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.tfg.databinding.FragmentPostsBinding;
 import com.example.tfg.models.Post;
 import com.example.tfg.utils.PostAdapter;
+import com.example.tfg.utils.ViewAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,6 +35,8 @@ public class PostsFragment extends Fragment implements View.OnClickListener {
     private List<Post> postList;
     private PostAdapter adapter;
     MainActivity activity;
+    
+    public static final String TITLE = "Posts";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

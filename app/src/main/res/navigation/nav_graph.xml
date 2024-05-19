@@ -40,5 +40,11 @@
         android:name="com.example.tfg.EditProfileFragment"
         android:label="EditProfileFragment"
         tools:layout="@layout/fragment_edit_profile" />
+    
+    <fragment
+        android:id="@+id/mypostsfragment"
+        android:name="com.example.tfg.MyPostsFragment"
+        android:label="MyPostsFragment"
+        tools:layout="@layout/fragment_my_posts" />
 
 </navigation>
