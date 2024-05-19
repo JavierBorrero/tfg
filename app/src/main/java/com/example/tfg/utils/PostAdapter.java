@@ -25,6 +25,7 @@ import java.util.List;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<Post> postList;
     private StorageReference storageReference;
+    private boolean showMyPosts;
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         public TextView authorName;

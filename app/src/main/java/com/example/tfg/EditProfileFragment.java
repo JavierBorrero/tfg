@@ -1,21 +1,9 @@
 package com.example.tfg;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,21 +12,26 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.tfg.databinding.FragmentEditProfileBinding;
 import com.example.tfg.models.Usuario;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,18 +40,18 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     StorageReference storageReference;
+    MainActivity activity;
     
     private FragmentEditProfileBinding binding;
     
     EditText nombre, apellidos, telefono;
-    
+    Uri image;
     ImageView imagen;
-    
     String userId;
     
     Usuario usuario;
     
-    Uri image;
+    
 
     private final ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -92,6 +85,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         db = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         userId = mAuth.getCurrentUser().getUid();
+        activity = (MainActivity) getActivity(); 
         
         
         nombre = binding.fieldNombre;
@@ -101,6 +95,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         
         
         obtenerDatosUsuario(userId);
+        
         
         binding.btnAceptar.setOnClickListener(this);
         binding.btnCancelar.setOnClickListener(this);
@@ -198,7 +193,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onSuccess(Void unused) {
                         Toast.makeText(getContext(), "Perfil editado con exito", Toast.LENGTH_SHORT).show();
-                        NavHostFragment.findNavController(EditProfileFragment.this).navigate(R.id.accountfragment);
+                        activity.goToFragment(new AccountFragment(), R.id.accountfragment);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -249,7 +244,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         }
         
         if(i == R.id.btnCancelar){
-            NavHostFragment.findNavController(this).navigate(R.id.accountfragment);
+            if(activity != null){
+                activity.goToFragment(new AccountFragment(), R.id.accountfragment);
+            }
         }
         
         if(i == R.id.btnAceptar){

@@ -31,6 +31,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     StorageReference storageReference;
+    MainActivity activity;
     
     private FragmentAccountBinding binding;
     
@@ -63,6 +64,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         // Instancias
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        activity = (MainActivity) getActivity();
         
         storageReference = FirebaseStorage.getInstance().getReference();
         
@@ -113,11 +115,15 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         
         if(i == R.id.btnLogout){
             FirebaseAuth.getInstance().signOut();
-            NavHostFragment.findNavController(this).navigate(R.id.signinfragment);
+            if(activity != null){
+                activity.goToFragment(new SignInFragment(), R.id.signinfragment);
+            }
         }
         
         if(i == R.id.btnEditProfile){
-            NavHostFragment.findNavController(this).navigate(R.id.editprofilefragment);
+            if(activity != null){
+                activity.goToFragment(new EditProfileFragment(), R.id.editprofilefragment);
+            }
         }
     }
 }

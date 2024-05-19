@@ -1,17 +1,15 @@
 package com.example.tfg;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.example.tfg.databinding.FragmentSignUpBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,7 +19,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -32,6 +29,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     
     FirebaseAuth mAuth;
     FirebaseFirestore db;
+    MainActivity activity;
     private FragmentSignUpBinding binding;
 
     EditText nombre, apellido, telefono, correo, contrasena, confirmarContrasena;
@@ -49,6 +47,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        activity = (MainActivity) getActivity(); 
         
         binding.botonRegistro.setOnClickListener(this);
         binding.botonIrLogin.setOnClickListener(this);
@@ -252,7 +251,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     }
 
     private void onAuthSuccess(FirebaseUser user){
-        NavHostFragment.findNavController(this).navigate(R.id.postsfragment);
+        activity.goToFragment(new PostsFragment(), R.id.postsfragment);
     }
 
 
@@ -262,7 +261,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         if(i == R.id.botonRegistro){
             registro();
         } else if (i == R.id.botonIrLogin) {
-            NavHostFragment.findNavController(this).navigate(R.id.signinfragment);
+            activity.goToFragment(new SignInFragment(), R.id.signinfragment);
         }
     }
 }

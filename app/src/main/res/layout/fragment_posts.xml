@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PostsFragment">
+    
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"    
+        android:elevation="6dp"
+        android:layout_alignParentTop="true"/>
+    
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tabLayout" />
     
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnNewPost"
@@ -12,15 +24,8 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="18dp"
         android:layout_marginBottom="18dp"
-        android:src="@drawable/icon_create" />
-    
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/postsList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="5dp"
-        android:scrollbars="vertical"
-        tools:listitem="@layout/item_post" />
+        android:src="@drawable/icon_create" 
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"/>
 
-</FrameLayout>
+</RelativeLayout>

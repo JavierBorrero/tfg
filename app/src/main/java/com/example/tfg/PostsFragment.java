@@ -1,23 +1,15 @@
 package com.example.tfg;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.tfg.databinding.FragmentPostsBinding;
 import com.example.tfg.models.Post;
@@ -26,7 +18,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -39,13 +30,14 @@ public class PostsFragment extends Fragment implements View.OnClickListener {
     private FirebaseFirestore db;
     private List<Post> postList;
     private PostAdapter adapter;
+    MainActivity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
         
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        /*NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
             if(event == Lifecycle.Event.ON_RESUME){
@@ -57,7 +49,7 @@ public class PostsFragment extends Fragment implements View.OnClickListener {
                     }
                 });
             }
-        });
+        });*/
     }
     
     @Override
@@ -69,6 +61,8 @@ public class PostsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        activity = (MainActivity) getActivity(); 
         
         binding.btnNewPost.setOnClickListener(this);
         
@@ -125,13 +119,12 @@ public class PostsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-
     @Override
     public void onClick(View view) {
         int i = view.getId();
         
         if(i == R.id.btnNewPost){
-            NavHostFragment.findNavController(this).navigate(R.id.newpostfragment);
+            activity.goToFragment(new NewPostFragment(), R.id.newpostfragment);
         }
     }
 }

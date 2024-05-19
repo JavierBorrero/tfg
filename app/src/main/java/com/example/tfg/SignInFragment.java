@@ -1,17 +1,15 @@
 package com.example.tfg;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.example.tfg.databinding.FragmentSignInBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +26,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     
     EditText email, password;
     
+    MainActivity activity;
+    
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSignInBinding.inflate(inflater, container, false);
@@ -38,6 +38,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        activity = (MainActivity) getActivity(); 
         
         binding.btnInicioSesion.setOnClickListener(this);
         binding.btnIrRegistro.setOnClickListener(this);
@@ -98,7 +99,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
     private void onAuthSuccess(FirebaseUser user){
-        NavHostFragment.findNavController(this).navigate(R.id.postsfragment);
+        if(activity != null){
+            activity.goToFragment(new PostsFragment(), R.id.postsfragment);
+        }
     }
 
 
@@ -108,7 +111,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         if(i == R.id.btnInicioSesion){
             inicioSesion();
         }else if (i == R.id.btnIrRegistro){
-            NavHostFragment.findNavController(this).navigate(R.id.signupfragment);
+            if(activity != null){
+                activity.goToFragment(new SignUpFragment(), R.id.signupfragment);
+            }
         }
     }
 }

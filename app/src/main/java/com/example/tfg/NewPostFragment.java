@@ -16,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -52,6 +51,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
     FirebaseAuth auth;
     FirebaseFirestore db;
     StorageReference storageReference;
+    MainActivity activity;
     
     private FragmentNewPostBinding binding;
 
@@ -99,6 +99,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         db = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         userId = auth.getCurrentUser().getUid();
+        activity = (MainActivity) getActivity(); 
         
 
         binding.btnSubmitPost.setOnClickListener(this);
@@ -276,7 +277,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onSuccess(Void unused) {
                         Toast.makeText(getContext(), "Post publicado", Toast.LENGTH_SHORT).show();
-                        NavHostFragment.findNavController(NewPostFragment.this).navigate(R.id.postsfragment);
+                        activity.goToFragment(new PostsFragment(), R.id.postsfragment);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
