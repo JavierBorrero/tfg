@@ -8,24 +8,35 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.tfg.MyPostsFragment;
 import com.example.tfg.PostsFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ViewAdapter extends FragmentStateAdapter {
     
-    public ViewAdapter(Fragment fragment) {
+    private final List<Fragment> fragmentList = new ArrayList<>();
+    private final List<String> fragmentTitleList = new ArrayList<>();
+    
+    public ViewAdapter(@NonNull Fragment fragment) {
         super(fragment);
     }
 
+    public void addFragment(Fragment fragment, String title){
+        fragmentList.add(fragment);
+        fragmentTitleList.add(title);
+    }
+    
     @NonNull
     @Override
     public Fragment createFragment(int position){
-        if(position == 0){
-            return new PostsFragment();
-        }else{
-            return new MyPostsFragment();
-        }
+        return fragmentList.get(position);
     }
     
     @Override
     public int getItemCount(){
-        return 2;
+        return fragmentList.size();
+    }
+    
+    public CharSequence getPageTitle(int position){
+        return fragmentTitleList.get(position);
     }
 }

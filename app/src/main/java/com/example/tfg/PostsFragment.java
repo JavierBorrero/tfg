@@ -28,109 +28,32 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostsFragment extends Fragment implements View.OnClickListener {
+public class PostsFragment extends Fragment {
     
     FragmentPostsBinding binding;
-    private FirebaseFirestore db;
-    private List<Post> postList;
-    private PostAdapter adapter;
-    MainActivity activity;
-    
-    public static final String TITLE = "Posts";
+    ViewAdapter viewAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = FirebaseFirestore.getInstance();
-        
-        /*NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        
-        getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
-            if(event == Lifecycle.Event.ON_RESUME){
-                navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                    if(!(destination.getId() == R.id.postsfragment)){
-                        binding.btnNewPost.setVisibility(View.GONE);
-                    }else{
-                        binding.btnNewPost.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        });*/
     }
     
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentPostsBinding.inflate(inflater, container, false);
+        
+        setupViewPager();
+        
         return binding.getRoot();
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        
-        activity = (MainActivity) getActivity(); 
-        
-        binding.btnNewPost.setOnClickListener(this);
-        
-        postList = new ArrayList<>();
-        adapter = new PostAdapter(postList);
-        
-        binding.postsList.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.postsList.setAdapter(adapter);
-        
-        postsFromFirebase();
-    }
     
-    private void postsFromFirebase(){
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            List<Post> tempPostList = new ArrayList<>();
-                            for(QueryDocumentSnapshot document : task.getResult()){
-                                Post post = document.toObject(Post.class);
-                                tempPostList.add(post);
-                            }
-                            fetchAuthorNames(tempPostList);
-                        }else{
-                            Log.w("PostsFragment","Error getting documents ", task.getException());
-                        }
-                    }
-                });
-    }
-
-    private void fetchAuthorNames(List<Post> tempPostList) {
-        for (Post post : tempPostList) {
-            db.collection("usuarios").document(post.getUserId())
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                DocumentSnapshot userDoc = task.getResult();
-                                String authorName = userDoc.getString("nombre");
-                                Log.d("PostsFragment", "Author name for userId " + post.getUserId() + ": " + authorName);
-                                post.setNombreAutor(authorName); // Establecer el nombre del autor en el objeto Post
-                            } else {
-                                Log.w("PostsFragment", "Failed to get author name for userId " + post.getUserId());
-                            }
-                            postList.add(post);
-                            if (postList.size() == tempPostList.size()) {
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        int i = view.getId();
+    private void setupViewPager(){
+        viewAdapter = new ViewAdapter(this);
+        viewAdapter.addFragment(new AllPostsFragment(), "Todos los Posts");
+        viewAdapter.addFragment(new MyPostsFragment(), "Mis Posts");
         
-        if(i == R.id.btnNewPost){
-            activity.goToFragment(new NewPostFragment(), R.id.newpostfragment);
-        }
+        binding.viewPager.setAdapter(viewAdapter);
+
+        new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> tab.setText(viewAdapter.getPageTitle(position))).attach();
     }
 }
