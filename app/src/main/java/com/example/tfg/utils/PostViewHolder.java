@@ -3,6 +3,7 @@ package com.example.tfg.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,12 +34,10 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         postTitulo.setText(post.getTitulo());
 
         StorageReference pfpRef = storage.getReference().child("images/" + post.getUserId() + "/pfp/");
-        final long ONE_MEGABYTE = 1024 * 1024;
-        pfpRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        pfpRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                autorPfp.setImageBitmap(bitmap);
+            public void onSuccess(Uri uri) {
+                Glide.with(autorPfp.getContext()).load(uri).into(autorPfp);
             }
         });
     }

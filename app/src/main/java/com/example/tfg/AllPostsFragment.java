@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.tfg.databinding.FragmentAllPostsBinding;
 import com.example.tfg.models.Post;
@@ -50,6 +51,8 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        activity = (MainActivity) requireActivity(); 
 
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -58,6 +61,8 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
         
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(postAdapter);
+
+        binding.btnNewPost.setOnClickListener(this);
         
         postsFromFirebase();
     }
@@ -95,7 +100,9 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         int i = view.getId();
         if(i == R.id.btnNewPost){
-            activity.goToFragment(new NewPostFragment(), R.id.newpostfragment);
+            if(activity != null){
+                activity.goToFragment(new NewPostFragment(), R.id.newpostfragment);    
+            }
         }
     }
 }
