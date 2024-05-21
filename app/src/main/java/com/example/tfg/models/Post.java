@@ -18,21 +18,17 @@ public class Post {
     
     public int numeroPersonas;
     
-    public String imageUrl;
-    
     public boolean material;
     
     public Post(){}
     
-    public Post(String userId, String nombreAutor, String titulo, String descripcion, String localizacion, Date fechaHora, int numeroPersonas, String imageUrl, boolean material){
+    public Post(String userId, String titulo, String descripcion, String localizacion, Date fechaHora, int numeroPersonas, boolean material){
         this.userId = userId;
-        this.nombreAutor = nombreAutor;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.localizacion = localizacion;
         this.fechaHora = fechaHora;
         this.numeroPersonas = numeroPersonas;
-        this.imageUrl = imageUrl;
         this.material = material;
     }
 
@@ -90,14 +86,6 @@ public class Post {
 
     public void setNumeroPersonas(int numeroPersonas) {
         this.numeroPersonas = numeroPersonas;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 
     public boolean isMaterial() {

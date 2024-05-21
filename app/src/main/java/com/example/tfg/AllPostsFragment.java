@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tfg.databinding.FragmentAllPostsBinding;
-import com.example.tfg.databinding.FragmentPostsBinding;
 import com.example.tfg.models.Post;
 import com.example.tfg.utils.PostAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,17 +21,20 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AllPostsFragment extends Fragment implements View.OnClickListener {
     
-    FragmentAllPostsBinding binding;
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
     private List<Post> postList;
-    private PostAdapter adapter;
+    private PostAdapter postAdapter;
     MainActivity activity;
+    FragmentAllPostsBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,64 +50,45 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         db = FirebaseFirestore.getInstance();
-
-        activity = (MainActivity) getActivity();
-
-        binding.btnNewPost.setOnClickListener(this);
-
+        storage = FirebaseStorage.getInstance();
         postList = new ArrayList<>();
-        adapter = new PostAdapter(postList);
-
-        binding.postsList.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.postsList.setAdapter(adapter);
-
+        postAdapter = new PostAdapter(postList, storage);
+        
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerView.setAdapter(postAdapter);
+        
         postsFromFirebase();
     }
 
     private void postsFromFirebase(){
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            List<Post> tempPostList = new ArrayList<>();
-                            for(QueryDocumentSnapshot document : task.getResult()){
-                                Post post = document.toObject(Post.class);
-                                tempPostList.add(post);
-                            }
-                            fetchAuthorNames(tempPostList);
-                        }else{
-                            Log.w("PostsFragment","Error getting documents ", task.getException());
-                        }
-                    }
-                });
-    }
-
-    private void fetchAuthorNames(List<Post> tempPostList) {
-        for (Post post : tempPostList) {
-            db.collection("usuarios").document(post.getUserId())
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                DocumentSnapshot userDoc = task.getResult();
-                                String authorName = userDoc.getString("nombre");
-                                Log.d("PostsFragment", "Author name for userId " + post.getUserId() + ": " + authorName);
-                                post.setNombreAutor(authorName); // Establecer el nombre del autor en el objeto Post
-                            } else {
-                                Log.w("PostsFragment", "Failed to get author name for userId " + post.getUserId());
-                            }
+        db.collection("posts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    postList.clear();
+                    for(QueryDocumentSnapshot document : task.getResult()){
+                        String userId = document.getString("userId");
+                        String titulo = document.getString("titulo");
+                        String descripcion = document.getString("descripcion");
+                        String localizacion = document.getString("localizacion");
+                        Date fecha = document.getDate("fecha");
+                        int numeroPersonas = document.getLong("numeroPersonas").intValue();
+                        boolean material = document.getBoolean("materialNecesario");
+                        
+                        Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material);
+                        
+                        db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
+                            String authorName = userDoc.getString("nombre");
+                            post.setNombreAutor(authorName);
                             postList.add(post);
-                            if (postList.size() == tempPostList.size()) {
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    });
-        }
+                            postAdapter.notifyDataSetChanged();
+                        });
+                    }
+                }
+            }
+        });
     }
 
     @Override
