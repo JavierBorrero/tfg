@@ -8,14 +8,17 @@ public class Usuario {
     
     public String email;
     
+    public String imagePfpUrl;
+    
     public int telefono;
     
     public Usuario(){}
     
-    public Usuario(String nombre, String apellido, String email, int telefono){
+    public Usuario(String nombre, String apellido, String email, String imagePfpUrl, int telefono){
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
+        this.imagePfpUrl = imagePfpUrl;
         this.telefono = telefono;
     }
 
@@ -41,6 +44,14 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImagePfpUrl() {
+        return imagePfpUrl;
+    }
+
+    public void setImagePfpUrl(String imagePfpUrl) {
+        this.imagePfpUrl = imagePfpUrl;
     }
 
     public int getTelefono() {

@@ -58,10 +58,12 @@ public class MainActivity extends AppCompatActivity {
                 
                 if(itemId == R.id.postsfragment){
                     goToFragment(new PostsFragment(), R.id.postsfragment);
+                }else if (itemId == R.id.searchfragment) {
+                    goToFragment(new SearchFragment(), R.id.searchfragment);
                 } else if (itemId == R.id.accountfragment) {
                     goToFragment(new AccountFragment(), R.id.accountfragment);
                 }
-                
+
                 disableNavigationTemporarily();
                 return true;
                 

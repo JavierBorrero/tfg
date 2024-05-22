@@ -4,6 +4,11 @@
         android:id="@id/postsfragment"
         android:icon="@drawable/icon_home"
         android:title="@string/title_posts" />
+
+    <item
+        android:id="@id/searchfragment"
+        android:icon="@drawable/icon_search"
+        android:title="@string/title_search" />
     
     <item
         android:id="@id/accountfragment"
