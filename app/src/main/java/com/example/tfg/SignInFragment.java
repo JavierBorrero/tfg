@@ -42,6 +42,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         
         binding.btnInicioSesion.setOnClickListener(this);
         binding.btnIrRegistro.setOnClickListener(this);
+        binding.recuperarContrasena.setOnClickListener(this);
         
         email = binding.fieldEmail;
         password = binding.fieldPassword;
@@ -113,6 +114,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         }else if (i == R.id.btnIrRegistro){
             if(activity != null){
                 activity.goToFragment(new SignUpFragment(), R.id.signupfragment);
+            }
+        }else if(i == R.id.recuperarContrasena){
+            if(activity != null){
+                activity.goToFragment(new ForgotPasswordFragment(), R.id.forgotpasswordfragment);
             }
         }
     }

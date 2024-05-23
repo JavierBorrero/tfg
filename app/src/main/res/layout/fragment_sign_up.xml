@@ -57,6 +57,17 @@
         android:inputType="textPassword"
         app:layout_constraintTop_toBottomOf="@+id/fieldCorreo"
         app:layout_constraintStart_toStartOf="@+id/fieldCorreo" />
+    
+    <TextView
+        android:id="@+id/passwordInfo"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:hint="@string/hint_password_info"
+        app:layout_constraintTop_toBottomOf="@+id/fieldContrasena"
+        app:layout_constraintStart_toStartOf="@+id/fieldContrasena" />
 
     <EditText
         android:id="@+id/fieldConfirmarContrasena"
@@ -65,8 +76,8 @@
         android:layout_marginTop="12dp"
         android:hint="@string/hint_confirm_password"
         android:inputType="textPassword"
-        app:layout_constraintTop_toBottomOf="@+id/fieldContrasena"
-        app:layout_constraintStart_toStartOf="@+id/fieldContrasena" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordInfo"
+        app:layout_constraintStart_toStartOf="@+id/passwordInfo" />
 
     <Button
         android:id="@+id/botonRegistro"

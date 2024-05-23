@@ -27,6 +27,16 @@
         android:hint="@string/hint_password"
         app:layout_constraintTop_toBottomOf="@+id/fieldEmail"
         app:layout_constraintStart_toStartOf="@+id/fieldEmail"/>
+    
+    <TextView
+        android:id="@+id/recuperarContrasena"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_recuperar_contrasena"
+        android:clickable="true"
+        app:layout_constraintTop_toBottomOf="@+id/fieldPassword"
+        app:layout_constraintBottom_toTopOf="@+id/btnInicioSesion"
+        app:layout_constraintStart_toStartOf="@+id/fieldPassword" />
 
     <Button
         android:id="@+id/btnInicioSesion"

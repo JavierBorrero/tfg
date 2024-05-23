@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private final List<Integer> fragmentsToHideBottomNavView = Arrays.asList(
             R.id.signinfragment,
             R.id.signupfragment,
-            R.id.editprofilefragment
+            R.id.editprofilefragment,
+            R.id.forgotpasswordfragment
     );
     
     private boolean isNavigationEnabled = true;

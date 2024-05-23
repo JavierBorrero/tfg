@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class SignUpFragment extends Fragment implements View.OnClickListener {
+public class SignUpFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener {
     
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     MainActivity activity;
-    private FragmentSignUpBinding binding;
+    FragmentSignUpBinding binding;
 
     EditText nombre, apellido, telefono, correo, contrasena, confirmarContrasena;
     
@@ -51,6 +51,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         
         binding.botonRegistro.setOnClickListener(this);
         binding.botonIrLogin.setOnClickListener(this);
+        binding.fieldContrasena.setOnFocusChangeListener(this);
 
         nombre = binding.fieldNombre;
         apellido = binding.fieldApellido;
@@ -233,21 +234,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                         Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
-        /*db.collection("usuarios")
-                .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getActivity(), "email: " + email, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });*/
     }
 
     private void onAuthSuccess(FirebaseUser user){
@@ -262,6 +248,15 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             registro();
         } else if (i == R.id.botonIrLogin) {
             activity.goToFragment(new SignInFragment(), R.id.signinfragment);
+        }
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        if(b){
+            binding.passwordInfo.setVisibility(View.VISIBLE);
+        }else{
+            binding.passwordInfo.setVisibility(View.GONE);
         }
     }
 }

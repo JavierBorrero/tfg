@@ -58,5 +58,11 @@
         android:name="com.example.tfg.PostDetailFragment"
         android:label="PostDetailFragment"
         tools:layout="@layout/fragment_post_detail" />
+    
+    <fragment
+        android:id="@+id/forgotpasswordfragment"
+        android:name="com.example.tfg.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment"
+        tools:layout="@layout/fragment_forgot_password" />
 
 </navigation>

@@ -9,6 +9,7 @@
     <!-- === STRINGS SIGNIN === -->
     <string name="hint_email">Email</string>
     <string name="hint_password">Contraseña</string>
+    <string name="hint_recuperar_contrasena">Recuperar contraseña</string>
     <string name="boton_iniciar_sesion">Iniciar Sesion</string>
     <string name="boton_ir_registro">Ir al Registro</string>
 
@@ -19,6 +20,7 @@
     <string name="hint_confirm_password">Confirmar Contraseña</string>
     <string name="boton_registro">Registrarme</string>
     <string name="boton_ir_login">Ir al Inicio de Sesion</string>
+    <string name="hint_password_info">La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número, un carácter especial y tener una longitud mínima de 12 caracteres.</string>
 
     <!-- === STRINGS NEWPOST === -->
     <string name="hint_titulo_post">Titulo del anuncio…</string>
@@ -53,7 +55,7 @@
     <string name="hint_buscador">Buscar…</string>
     <string name="buscador_personas">Personas</string>
     <string name="buscador_posts">Posts</string>
-    
+
     <!-- === STRINGS POST DETAIL === -->
     <string name="post_detail_titulo">Titulo</string>
     <string name="post_detail_autor">Autor</string>
@@ -61,5 +63,12 @@
     <string name="post_detail_localizacion">Localizacion</string>
     <string name="post_detail_numero_personas">Numero Personas</string>
     <string name="post_detail_material">Material Necesario</string>
+
+    <!-- === STRINGS FORGOT PASSWORD === -->
+    <string name="text_info_correo">Introduzca su correo electronico y le enviaremos un mensaje para restablecer su contraseña</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="correo_enviado">Le hemos enviado un correo para restablecer su contraseña</string>
+    <string name="volver_signin">Volver al inicio de sesion</string>
+    <string name="volver_signup">Voler al registro</string>
 
 </resources>
