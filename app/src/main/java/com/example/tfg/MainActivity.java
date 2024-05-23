@@ -83,34 +83,6 @@ public class MainActivity extends AppCompatActivity {
         
         getOnBackPressedDispatcher().addCallback(this, callback);
         
-        /*binding.botNavView.setOnItemSelectedListener(item -> {
-            if(item.getItemId() == R.id.postsfragment){
-                loadFragment(new PostsFragment());
-            }
-        });*/
-        
-        
-        /*NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupWithNavController(binding.botNavView, navController);
-
-        // Array de fragemnts para no mostrar el botNavView
-        List<Integer> hideBotNavViewList = Arrays.asList(
-                R.id.signinfragment,
-                R.id.signupfragment,
-                R.id.editprofilefragment
-        );
-        
-        getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
-            if(event == Lifecycle.Event.ON_RESUME){
-                navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                    if(hideBotNavViewList.contains(destination.getId())){
-                        binding.botNavView.setVisibility(View.GONE);
-                    }else{
-                        binding.botNavView.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        });*/
     }
 
     public void goToFragment(Fragment fragment, int fragmentId){

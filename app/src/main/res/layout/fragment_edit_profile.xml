@@ -13,13 +13,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:cardCornerRadius="80dp">
+        app:cardCornerRadius="100dp">
 
         <ImageView
             android:id="@+id/profilePic"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/icon_person_profile" />
+            android:src="@drawable/icon_person_profile"
+            android:scaleType="centerCrop"
+            android:background="@drawable/circular_background"
+            android:foreground="@drawable/circular_mask"/>
         
     </androidx.cardview.widget.CardView>
     

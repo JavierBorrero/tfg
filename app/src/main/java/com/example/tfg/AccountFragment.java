@@ -2,6 +2,7 @@ package com.example.tfg;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentAccountBinding;
 import com.example.tfg.models.Usuario;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -98,13 +100,10 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         });
         
         StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
-        
-        final long megabytes = 5 * 1024 * 1024;
-        reference.getBytes(megabytes).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                imagen.setImageBitmap(bitmap);
+            public void onSuccess(Uri uri) {
+                Glide.with(imagen.getContext()).load(uri).into(imagen);
             }
         });
     }

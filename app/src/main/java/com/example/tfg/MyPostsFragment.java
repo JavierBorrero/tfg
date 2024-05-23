@@ -59,7 +59,12 @@ public class MyPostsFragment extends Fragment {
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList, storage);
+        postAdapter = new PostAdapter(postList, storage, new PostAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Post post) {
+                
+            }
+        });
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(postAdapter);
@@ -85,8 +90,9 @@ public class MyPostsFragment extends Fragment {
                                 Date fecha = document.getDate("fecha");
                                 int numeroPersonas = document.getLong("numeroPersonas").intValue();
                                 boolean material = document.getBoolean("materialNecesario");
+                                String imageUrl = document.getString("imageUrl");
 
-                                Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material);
+                                Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
                                 db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
                                     String authorName = userDoc.getString("nombre");

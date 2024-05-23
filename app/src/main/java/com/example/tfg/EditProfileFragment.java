@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentEditProfileBinding;
 import com.example.tfg.models.Usuario;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -124,6 +125,14 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                 Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
+        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Glide.with(imagen.getContext()).load(uri).into(imagen);
+            }
+        });
     }
     
     // === INICIO FUNCIONES PARA OBTENER PATH IMAGEN ===
@@ -173,7 +182,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         if(image != null){
             editarConFotoPerfil(userId, cadenaNombre, cadenaApellido, numTelefono, image);
         }else{
-            editarConFotoPerfil(userId, cadenaNombre, cadenaApellido, numTelefono, null);
+            editarPerfil(userId, cadenaNombre, cadenaApellido, numTelefono, null);
         }
     }
     
@@ -232,6 +241,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                     Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+        }else{
+            
         }
     }
     

@@ -48,10 +48,18 @@
     <string name="item_post_author_email">authoremail@gmail.com</string>
     <string name="item_post_title">Titulo del post</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean nec condimentum ante, quis mattis mi. Proin ut rhoncus libero, ac euismod neque. Ut suscipit, enim a facilisis consequat, orci lacus venenatis orci, at ultricies orci nulla sed ex. In condimentum viverra velit, eget feugiat libero imperdiet vel. Aenean pretium, lectus vitae bibendum bibendum, diam turpis convallis eros, quis tristique leo sapien at ipsum. Praesent eu odio id nulla lobortis auctor. Donec eget dolor eget nisl euismod commodo vel a lacus. Quisque ut justo vitae urna pharetra accumsan. Etiam dignissim neque iaculis mauris viverra, blandit rhoncus odio porttitor. Phasellus nibh arcu.</string>
-    
+
     <!-- === STRINGS SEARCH === -->
     <string name="hint_buscador">Buscar…</string>
     <string name="buscador_personas">Personas</string>
     <string name="buscador_posts">Posts</string>
+    
+    <!-- === STRINGS POST DETAIL === -->
+    <string name="post_detail_titulo">Titulo</string>
+    <string name="post_detail_autor">Autor</string>
+    <string name="post_detail_fecha">Fecha</string>
+    <string name="post_detail_localizacion">Localizacion</string>
+    <string name="post_detail_numero_personas">Numero Personas</string>
+    <string name="post_detail_material">Material Necesario</string>
 
 </resources>

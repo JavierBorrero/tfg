@@ -52,5 +52,11 @@
         android:name="com.example.tfg.SearchFragment"
         android:label="SearchFragment"
         tools:layout="@layout/fragment_search" />
+    
+    <fragment
+        android:id="@+id/postdetailfragment"
+        android:name="com.example.tfg.PostDetailFragment"
+        android:label="PostDetailFragment"
+        tools:layout="@layout/fragment_post_detail" />
 
 </navigation>

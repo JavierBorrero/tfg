@@ -65,6 +65,8 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
     Uri image;
     
     String userId;
+    
+    private boolean isSearching = false;
 
     ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -242,6 +244,8 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         if(!validarCampos()){
             return;
         }
+        
+        binding.btnSubmitPost.setClickable(false);
 
         String cadenaTitulo = titulo.getText().toString().trim();
         String cadenaDescripcion = descripcion.getText().toString().trim();
@@ -316,13 +320,28 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
             });
         }
     }
+
+    private void disableButtonForDelay(long delayMillis){
+        binding.btnSubmitPost.setEnabled(false);
+        binding.btnSubmitPost.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.btnSubmitPost.setEnabled(true);
+                isSearching = false;
+            }
+        }, delayMillis);
+    }
     
     @Override
     public void onClick(View view) {
         int i = view.getId();
 
         if(i == R.id.btnSubmitPost){
-            publicarPost();
+            if(!isSearching){
+                isSearching = true;
+                disableButtonForDelay(1000);
+                publicarPost();   
+            }
         }
 
         if(i == R.id.fieldFechaHora){

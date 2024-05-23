@@ -57,7 +57,12 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList, storage);
+        postAdapter = new PostAdapter(postList, storage, new PostAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Post post) {
+                openPostDetail(post);
+            }
+        });
         
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(postAdapter);
@@ -81,8 +86,9 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                         Date fecha = document.getDate("fecha");
                         int numeroPersonas = document.getLong("numeroPersonas").intValue();
                         boolean material = document.getBoolean("materialNecesario");
+                        String imageUrl = document.getString("imageUrl");
                         
-                        Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material);
+                        Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
                         
                         db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
                             String authorName = userDoc.getString("nombre");
@@ -94,6 +100,25 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
+    }
+    
+    private void openPostDetail(Post post){
+        Bundle bundle = new Bundle();
+        bundle.putString("titulo", post.getTitulo());
+        bundle.putString("descripcion", post.getDescripcion());
+        bundle.putString("localizacion", post.getLocalizacion());
+        bundle.putLong("fecha", post.getFechaHora().getTime());
+        bundle.putInt("numeroPersonas", post.getNumeroPersonas());
+        bundle.putBoolean("materialNecesario", post.isMaterial());
+        bundle.putString("nombreAutor", post.getNombreAutor());
+        bundle.putString("imageUrl", post.getImageUrl());
+        
+        PostDetailFragment postDetailFragment = new PostDetailFragment();
+        postDetailFragment.setArguments(bundle);
+        
+        if(activity != null){
+            activity.goToFragment(postDetailFragment, R.id.postdetailfragment);
+        }
     }
 
     @Override

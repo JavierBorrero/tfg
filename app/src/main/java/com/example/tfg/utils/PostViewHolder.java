@@ -29,7 +29,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
         postTitulo = view.findViewById(R.id.postTitle);
     }
     
-    public void bind(Post post, FirebaseStorage storage){
+    public void bind(Post post, FirebaseStorage storage, PostAdapter.OnItemClickListener listener){
         autorNombre.setText(post.getNombreAutor());
         postTitulo.setText(post.getTitulo());
 
@@ -38,6 +38,13 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onSuccess(Uri uri) {
                 Glide.with(autorPfp.getContext()).load(uri).into(autorPfp);
+            }
+        });
+        
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onItemClick(post);
             }
         });
     }

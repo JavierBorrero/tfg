@@ -17,10 +17,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
 
     private List<Post> postList;
     private FirebaseStorage storage;
+    private OnItemClickListener listener;
+    
+    public interface OnItemClickListener {
+        void onItemClick(Post post);
+    }
 
-    public PostAdapter(List<Post> postList, FirebaseStorage storage) {
+    public PostAdapter(List<Post> postList, FirebaseStorage storage, OnItemClickListener listener) {
         this.postList = postList;
         this.storage = storage;
+        this.listener = listener;
     }
 
     @NonNull
@@ -33,7 +39,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        holder.bind(post, storage);
+        holder.bind(post, storage, listener);
     }
 
     @Override

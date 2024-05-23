@@ -43,6 +43,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private Set<String> usersIds;
     private UserAdapter userAdapter;
     private PostAdapter postAdapter;
+    private boolean isSearching = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         
         // Posts Recycler
         binding.recyclerPosts.setLayoutManager(new LinearLayoutManager(getContext()));
-        postAdapter = new PostAdapter(postList, storage);
+        postAdapter = new PostAdapter(postList, storage, new PostAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Post post) {
+                
+            }
+        });
         binding.recyclerPosts.setAdapter(postAdapter);
         
         binding.btnBuscar.setOnClickListener(this);
@@ -138,8 +144,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                     Date fecha = document.getDate("fecha");
                                     int numeroPersonas = document.getLong("numeroPersonas").intValue();
                                     boolean material = document.getBoolean("materialNecesario");
+                                    String imageUrl = document.getString("imageUrl");
 
-                                    Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material);
+                                    Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
                                     db.collection("usuarios").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
@@ -161,12 +168,27 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     });            
         }
     }
+    
+    private void disableButtonForDelay(long delayMillis){
+        binding.btnBuscar.setEnabled(false);
+        binding.btnBuscar.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.btnBuscar.setEnabled(true);
+                isSearching = false;
+            }
+        }, delayMillis);
+    }
 
     @Override
     public void onClick(View view) {
         int i = view.getId();
         if(i == R.id.btnBuscar){
-            busqueda();
+            if(!isSearching){
+                isSearching = true;
+                disableButtonForDelay(2000);
+                busqueda();
+            }
         }
     }
 }
