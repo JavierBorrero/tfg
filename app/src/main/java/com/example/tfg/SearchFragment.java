@@ -137,6 +137,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if(task.isSuccessful()){
                                 for(QueryDocumentSnapshot document : task.getResult()){
+                                    String id = document.getId();
                                     String userId = document.getString("userId");
                                     String titulo = document.getString("titulo");
                                     String descripcion = document.getString("descripcion");
@@ -146,7 +147,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                     boolean material = document.getBoolean("materialNecesario");
                                     String imageUrl = document.getString("imageUrl");
 
-                                    Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
+                                    Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
                                     db.collection("usuarios").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override

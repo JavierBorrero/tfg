@@ -79,6 +79,7 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                 if(task.isSuccessful()){
                     postList.clear();
                     for(QueryDocumentSnapshot document : task.getResult()){
+                        String id = document.getId();
                         String userId = document.getString("userId");
                         String titulo = document.getString("titulo");
                         String descripcion = document.getString("descripcion");
@@ -88,7 +89,7 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                         boolean material = document.getBoolean("materialNecesario");
                         String imageUrl = document.getString("imageUrl");
                         
-                        Post post = new Post(userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
+                        Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
                         
                         db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
                             String authorName = userDoc.getString("nombre");
@@ -104,6 +105,8 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
     
     private void openPostDetail(Post post){
         Bundle bundle = new Bundle();
+        bundle.putString("id", post.getId());
+        bundle.putString("userId", post.getUserId());
         bundle.putString("titulo", post.getTitulo());
         bundle.putString("descripcion", post.getDescripcion());
         bundle.putString("localizacion", post.getLocalizacion());

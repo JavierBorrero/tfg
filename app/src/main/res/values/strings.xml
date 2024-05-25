@@ -63,6 +63,9 @@
     <string name="post_detail_localizacion">Localizacion</string>
     <string name="post_detail_numero_personas">Numero Personas</string>
     <string name="post_detail_material">Material Necesario</string>
+    <string name="btn_apuntar_actividad">Apuntarme</string>
+    <string name="btn_editar_post">Editar anuncio</string>
+    <string name="btn_eliminar_post">Eliminar anuncio</string>
 
     <!-- === STRINGS FORGOT PASSWORD === -->
     <string name="text_info_correo">Introduzca su correo electronico y le enviaremos un mensaje para restablecer su contraseña</string>

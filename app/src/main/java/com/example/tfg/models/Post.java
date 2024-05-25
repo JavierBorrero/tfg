@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class Post {
     
+    public String id;
+    
     public String userId;
     
     public String nombreAutor;
@@ -24,7 +26,8 @@ public class Post {
     
     public Post(){}
     
-    public Post(String userId, String titulo, String descripcion, String localizacion, Date fechaHora, int numeroPersonas, boolean material, String imageUrl){
+    public Post(String id, String userId, String titulo, String descripcion, String localizacion, Date fechaHora, int numeroPersonas, boolean material, String imageUrl){
+        this.id = id;
         this.userId = userId;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -33,6 +36,14 @@ public class Post {
         this.numeroPersonas = numeroPersonas;
         this.material = material;
         this.imageUrl = imageUrl;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserId() {
