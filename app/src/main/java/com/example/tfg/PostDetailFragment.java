@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentPostDetailBinding;
+import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.RegistroActividad;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -160,6 +161,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     
     private void operacionRegistro(String postId, String userId){
         RegistroActividad registroActividad = new RegistroActividad();
+        EnviarCorreos enviarCorreos = new EnviarCorreos();
         Context context = getContext();
         
         if(estaRegistrado){
@@ -168,6 +170,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
             estaRegistrado = false;
         }else{
             registroActividad.registrarUsuarioActividad(context, postId, userId);
+            enviarCorreos.enviarEmailApuntarActividad(context, postUserId, userId, titulo);
             binding.btnApuntarActividad.setText("Eliminarse");
             estaRegistrado = true;
         }
@@ -184,7 +187,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         int i = view.getId();
         if(i == R.id.btnApuntarActividad){
-            operacionRegistro(postId, userId);
+            operacionRegistro(postId,userId);
         }
     }
 }
