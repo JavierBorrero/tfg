@@ -27,7 +27,7 @@ public class EnviarCorreos {
         db = FirebaseFirestore.getInstance();
     }
     
-    public void enviarEmailApuntarActividad(Context context, String postUserId, String userId, String tituloActividad){
+    public void enviarEmailActividad(Context context, String postUserId, String userId, String tituloActividad, boolean flag){
         
         DocumentReference userPostRef = db.collection("usuarios").document(postUserId);
         
@@ -51,7 +51,12 @@ public class EnviarCorreos {
                                         nombre = document.getString("nombre");
                                         apellidos = document.getString("apellido");
                                         
-                                        enviarCorreo(context, tituloActividad);
+                                        if(flag){
+                                            enviarCorreoApuntarActividad(context, tituloActividad);    
+                                        }else{
+                                            enviarCorreoEliminarActividad(context, tituloActividad);
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -62,11 +67,12 @@ public class EnviarCorreos {
         });
     }
     
-    private void enviarCorreo(Context context, String tituloActividad){
+    private void enviarCorreoApuntarActividad(Context context, String tituloActividad){
         Map<String, Object> emailMessage = new HashMap<>();
-        emailMessage.put("subject", nombre + "Se ha apuntado a tu actividad");
-        emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " se ha apuntado a tu actividad: " + tituloActividad);
-        emailMessage.put("html", "El usuario " + nombre + " " + apellidos + " se ha apuntado a tu actividad: " + tituloActividad);
+        emailMessage.put("subject", nombre + " " + apellidos + " se ha apuntado a tu actividad");
+        emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " se ha apuntado a tu actividad: " + tituloActividad + "\n" + 
+                "Entra en la aplicacion y contacta con el!" + "\n\n" +
+                "DAM TFG JAVIER BORRERO DEL CERRO");
 
         Map<String, Object> emailData = new HashMap<>();
         emailData.put("to", emailPostUser);
@@ -77,6 +83,26 @@ public class EnviarCorreos {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         mostrarPopupMensaje(context, "Se le ha apuntado a la actividad y se ha enviado un mensaje al propietario de este anuncio");
+                    }
+                });
+    }
+    
+    private void enviarCorreoEliminarActividad(Context context, String tituloActividad){
+        Map<String, Object> emailMessage = new HashMap<>();
+        emailMessage.put("subject", nombre + " " + apellidos + " se ha eliminado de tu actividad");
+        emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " se ha eliminado de tu actividad: " + tituloActividad + "\n" +
+                "Entra en la aplicacion y contacta con el!" + "\n\n" +
+                "DAM TFG JAVIER BORRERO DEL CERRO");
+
+        Map<String, Object> emailData = new HashMap<>();
+        emailData.put("to", emailPostUser);
+        emailData.put("message", emailMessage);
+
+        db.collection("mail").document()
+                .set(emailData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        mostrarPopupMensaje(context, "Se le ha elimado de la actividad y se ha enviado un mensaje al propietario de este anuncio");
                     }
                 });
     }

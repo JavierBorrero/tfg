@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentPostDetailBinding;
+import com.example.tfg.models.Usuario;
 import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.RegistroActividad;
+import com.example.tfg.utils.UserAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,16 +30,20 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class PostDetailFragment extends Fragment implements View.OnClickListener {
     
     FragmentPostDetailBinding binding;
+    private UserAdapter userAdapter;
+    private List<Usuario> userList;
     
-    String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, fechaFormateada, imageUrl, keyToRemove;
+    String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, fechaFormateada, imageUrl;
     Date fecha;
     long fechaLong;
     int numeroPersonas;
@@ -57,6 +65,11 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        binding.recyclerPersonas.setLayoutManager(new LinearLayoutManager(getContext()));
+        userList = new ArrayList<>();
+        userAdapter = new UserAdapter(userList);
+        binding.recyclerPersonas.setAdapter(userAdapter);
         
         if(getArguments() != null){
             postId = getArguments().getString("id");
@@ -65,7 +78,6 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
             comprobarUsuarioRegistrado(postId, userId, binding.btnApuntarActividad);
             
             binding.btnApuntarActividad.setOnClickListener(this);
-            
         }
         
         return binding.getRoot();
@@ -153,6 +165,12 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
                             estaRegistrado = false;
                             boton.setText("Apuntarse");
                         }
+                        
+                        if(usuariosRegistrados != null){
+                            for(String userId : usuariosRegistrados.keySet()){
+                                infoUsuarioRecycler(userId);
+                            }
+                        }
                     }
                 }
             }
@@ -166,15 +184,33 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         
         if(estaRegistrado){
             registroActividad.eliminarUsuarioActividad(context, postId, userId);
+            enviarCorreos.enviarEmailActividad(context, postUserId, userId, titulo, false);
             binding.btnApuntarActividad.setText("Apuntarse");
             estaRegistrado = false;
         }else{
             registroActividad.registrarUsuarioActividad(context, postId, userId);
-            enviarCorreos.enviarEmailApuntarActividad(context, postUserId, userId, titulo);
+            enviarCorreos.enviarEmailActividad(context, postUserId, userId, titulo, true);
             binding.btnApuntarActividad.setText("Eliminarse");
             estaRegistrado = true;
         }
         
+    }
+    
+    private void infoUsuarioRecycler(String userId){
+        DocumentReference docRef = db.collection("usuarios").document(userId);
+        
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    Usuario usuario = documentSnapshot.toObject(Usuario.class);
+                    if(usuario != null){
+                        userList.add(usuario);
+                        userAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
     }
     
     @Override
