@@ -52,7 +52,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     
     Usuario usuario;
     
-    
 
     private final ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {

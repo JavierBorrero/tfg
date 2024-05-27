@@ -23,9 +23,6 @@ public class RegistroActividad {
         db = FirebaseFirestore.getInstance();
     }
     
-    public void comprobarUsuariosMaximos(String postId){
-        
-    }
     
     public void registrarUsuarioActividad(Context context, String postId, String userId){
         DocumentReference postRef = db.collection("posts").document(postId);

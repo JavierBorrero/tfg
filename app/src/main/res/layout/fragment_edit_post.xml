@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/fieldTitulo"
+        android:id="@+id/editTitulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/fieldDescripcion"
+        android:id="@+id/editDescripcion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -27,12 +27,12 @@
         android:layout_marginRight="16dp"
         android:hint="@string/hint_descripcion_post"
         android:maxLength="60"
-        app:layout_constraintEnd_toEndOf="@+id/fieldTitulo"
-        app:layout_constraintStart_toStartOf="@id/fieldTitulo"
-        app:layout_constraintTop_toBottomOf="@id/fieldTitulo" />
+        app:layout_constraintEnd_toEndOf="@+id/editTitulo"
+        app:layout_constraintStart_toStartOf="@id/editTitulo"
+        app:layout_constraintTop_toBottomOf="@id/editTitulo" />
 
     <EditText
-        android:id="@+id/fieldLocalizacion"
+        android:id="@+id/editLocalizacion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -40,12 +40,12 @@
         android:layout_marginRight="16dp"
         android:hint="@string/hint_localizacion_post"
         android:maxLength="30"
-        app:layout_constraintEnd_toEndOf="@+id/fieldDescripcion"
-        app:layout_constraintStart_toStartOf="@id/fieldDescripcion"
-        app:layout_constraintTop_toBottomOf="@id/fieldDescripcion" />
+        app:layout_constraintEnd_toEndOf="@+id/editDescripcion"
+        app:layout_constraintStart_toStartOf="@id/editDescripcion"
+        app:layout_constraintTop_toBottomOf="@id/editDescripcion" />
 
     <EditText
-        android:id="@+id/fieldFechaHora"
+        android:id="@+id/editFechaHora"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -53,13 +53,13 @@
         android:layout_marginRight="16dp"
         android:clickable="true"
         android:focusable="false"
-        android:hint="@string/hint_fecha_hora" 
-        app:layout_constraintEnd_toEndOf="@+id/fieldLocalizacion" 
-        app:layout_constraintStart_toStartOf="@+id/fieldLocalizacion"
-        app:layout_constraintTop_toBottomOf="@+id/fieldLocalizacion"/>
+        android:hint="@string/hint_fecha_hora"
+        app:layout_constraintEnd_toEndOf="@+id/editLocalizacion"
+        app:layout_constraintStart_toStartOf="@+id/editLocalizacion"
+        app:layout_constraintTop_toBottomOf="@+id/editLocalizacion"/>
 
     <EditText
-        android:id="@+id/fieldNumeroPersonas"
+        android:id="@+id/editNumeroPersonas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -67,12 +67,12 @@
         android:layout_marginRight="16dp"
         android:hint="@string/hint_numero_post"
         android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@+id/fieldFechaHora"
-        app:layout_constraintStart_toStartOf="@+id/fieldFechaHora"
-        app:layout_constraintTop_toBottomOf="@+id/fieldFechaHora" />
+        app:layout_constraintEnd_toEndOf="@+id/editFechaHora"
+        app:layout_constraintStart_toStartOf="@+id/editFechaHora"
+        app:layout_constraintTop_toBottomOf="@+id/editFechaHora" />
 
     <EditText
-        android:id="@+id/fieldImagen"
+        android:id="@+id/editImagen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -80,32 +80,32 @@
         android:layout_marginRight="16dp"
         android:clickable="true"
         android:focusable="false"
-        android:hint="@string/hint_foto_post"
-        app:layout_constraintEnd_toEndOf="@+id/fieldNumeroPersonas"
-        app:layout_constraintStart_toStartOf="@+id/fieldNumeroPersonas"
-        app:layout_constraintTop_toBottomOf="@+id/fieldNumeroPersonas" />
+        android:hint="@string/cambiar_imagen"
+        app:layout_constraintEnd_toEndOf="@+id/editNumeroPersonas"
+        app:layout_constraintStart_toStartOf="@+id/editNumeroPersonas"
+        app:layout_constraintTop_toBottomOf="@+id/editNumeroPersonas" />
 
     <CheckBox
-        android:id="@+id/fieldMaterial"
+        android:id="@+id/editMaterial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/text_checkbox_post"
-        app:layout_constraintStart_toStartOf="@+id/fieldImagen"
-        app:layout_constraintTop_toBottomOf="@+id/fieldImagen" />
+        app:layout_constraintStart_toStartOf="@+id/editImagen"
+        app:layout_constraintTop_toBottomOf="@+id/editImagen" />
 
     <ImageView
         android:id="@+id/fotoPrevia"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="70dp"
-        app:layout_constraintTop_toBottomOf="@id/fieldImagen"
+        app:layout_constraintTop_toBottomOf="@id/editImagen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnSubmitPost"
+        android:id="@+id/btnConfirmEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="18dp"

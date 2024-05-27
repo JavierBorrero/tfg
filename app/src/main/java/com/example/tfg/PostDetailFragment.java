@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentPostDetailBinding;
+import com.example.tfg.models.Post;
 import com.example.tfg.models.Usuario;
 import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.RegistroActividad;
@@ -75,9 +76,9 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
             postId = getArguments().getString("id");
             userId = auth.getCurrentUser().getUid();
             
-            comprobarUsuarioRegistrado(postId, userId, binding.btnApuntarActividad);
+            comprobarUsuarioRegistrado(postId, userId, binding.btnActividad);
             
-            binding.btnApuntarActividad.setOnClickListener(this);
+            binding.btnActividad.setOnClickListener(this);
         }
         
         return binding.getRoot();
@@ -109,11 +110,11 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         
         String currentUser = auth.getCurrentUser().getUid();
         if(currentUser.equals(postUserId)){
-            binding.btnApuntarActividad.setVisibility(View.GONE);
+            binding.btnActividad.setVisibility(View.GONE);
             binding.btnEditarPost.setVisibility(View.VISIBLE);
             binding.btnBorrarPost.setVisibility(View.VISIBLE);
         }else{
-            binding.btnApuntarActividad.setVisibility(View.VISIBLE);
+            binding.btnActividad.setVisibility(View.VISIBLE);
             binding.btnEditarPost.setVisibility(View.GONE);
             binding.btnBorrarPost.setVisibility(View.GONE);
         }
@@ -133,7 +134,8 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
             Glide.with(binding.detailImage.getContext()).load(R.drawable.icon_no_image).into(binding.detailImage);
         }
         
-        binding.btnApuntarActividad.setOnClickListener(this);
+        binding.btnActividad.setOnClickListener(this);
+        binding.btnEditarPost.setOnClickListener(this);
         
     }
     
@@ -153,9 +155,9 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
                         boolean usuarioEstaRegistrado = usuariosRegistrados != null && usuariosRegistrados.containsKey(userId);
 
                         if(totalUsuariosRegistrados >= maximoUsuariosRegistrados && !usuarioEstaRegistrado){
-                            binding.btnApuntarActividad.setEnabled(false);
+                            binding.btnActividad.setEnabled(false);
                         }else{
-                            binding.btnApuntarActividad.setEnabled(true);
+                            binding.btnActividad.setEnabled(true);
                         }
                         
                         if(usuarioEstaRegistrado){
@@ -185,12 +187,12 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         if(estaRegistrado){
             registroActividad.eliminarUsuarioActividad(context, postId, userId);
             enviarCorreos.enviarEmailActividad(context, postUserId, userId, titulo, false);
-            binding.btnApuntarActividad.setText("Apuntarse");
+            binding.btnActividad.setText("Apuntarse");
             estaRegistrado = false;
         }else{
             registroActividad.registrarUsuarioActividad(context, postId, userId);
             enviarCorreos.enviarEmailActividad(context, postUserId, userId, titulo, true);
-            binding.btnApuntarActividad.setText("Eliminarse");
+            binding.btnActividad.setText("Eliminarse");
             estaRegistrado = true;
         }
         
@@ -213,17 +215,39 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         });
     }
     
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    private void openEditPost(){
+        Bundle bundle = new Bundle();
+        bundle.putString("id", postId);
+        bundle.putString("userId", postUserId);
+        bundle.putString("titulo", titulo);
+        bundle.putString("descripcion", descripcion);
+        bundle.putString("localizacion", localizacion);
+        bundle.putLong("fecha", fechaLong);
+        bundle.putString("fechaString", fechaFormateada);
+        bundle.putInt("numeroPersonas", numeroPersonas);
+        bundle.putBoolean("materialNecesario", materialNecesario);
+        bundle.putString("nombreAutor", nombreAutor);
+        bundle.putString("imageUrl", imageUrl);
+        bundle.putInt("usuariosRegistrados", userList.size());
+
+        EditPostFragment editPostFragment = new EditPostFragment();
+        editPostFragment.setArguments(bundle);
+
+        if(activity != null){
+            activity.goToFragment(editPostFragment, R.id.editpostfragment);
+        }
     }
 
     @Override
     public void onClick(View view) {
         int i = view.getId();
-        if(i == R.id.btnApuntarActividad){
+        
+        if(i == R.id.btnActividad){
             operacionRegistro(postId,userId);
+        }
+        
+        if(i == R.id.btnEditarPost){
+            openEditPost();
         }
     }
 }
