@@ -74,8 +74,11 @@
     <string name="correo_enviado">Le hemos enviado un correo para restablecer su contraseña</string>
     <string name="volver_signin">Volver al inicio de sesion</string>
     <string name="volver_signup">Voler al registro</string>
-    
+
     <!-- === STRINGS EDITAR POST === -->
     <string name="cambiar_imagen">Cambiar Imagen…</string>
+    
+    <!-- === STRINGS USER PROFILE === -->
+    <string name="btn_contactar">Contactar</string>
 
 </resources>

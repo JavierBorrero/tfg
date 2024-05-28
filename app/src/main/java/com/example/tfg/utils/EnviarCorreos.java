@@ -3,11 +3,13 @@ package com.example.tfg.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -141,7 +143,55 @@ public class EnviarCorreos {
                     public void onComplete(@NonNull Task<Void> task) {
                         mostrarPopupMensaje(context, "Se ha eliminado al usuario de la actividad y se le ha enviado un mensaje");
                     }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
+    }
+    
+    public void enviarCorreoContactarOtroUsuario(Context context, String userId, String emailUsuario){
+        DocumentReference userRef = db.collection("usuarios").document(userId);
+        
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        nombre = document.getString("nombre");
+                        apellidos = document.getString("apellido");
+
+                        Map<String, Object> emailMessage = new HashMap<>();
+                        emailMessage.put("subject", nombre + " " + apellidos + " esta intentando contactar contigo");
+                        emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " esta intentando contactar contigo en la aplicacion." + "\n\n" +
+                                "Entra en la aplicacion y ponte en contacto con el" + "\n\n\n" +
+                                "DAM TFG JAVIER BORRERO DEL CERRO");
+
+                        Log.d("DEBUG", "NOMBRE: "+ nombre);
+                        Log.d("DEBUG", "APELLIDO: "+ apellidos);
+        
+                        Map<String, Object> emailData = new HashMap<>();
+                        emailData.put("to", emailUsuario);
+                        emailData.put("message", emailMessage);
+                        
+                        db.collection("mail").document()
+                                .set(emailData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        mostrarPopupMensaje(context, "Se ha enviado un mensaje al usuario para ponerte en contacto con el");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            }
+        });
     }
     
     

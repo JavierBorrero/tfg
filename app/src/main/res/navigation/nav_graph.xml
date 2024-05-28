@@ -70,5 +70,11 @@
         android:name="com.example.tfg.EditPostFragment"
         android:label="EditPostFragment"
         tools:layout="@layout/fragment_edit_post" />
+    
+    <fragment
+        android:id="@+id/userprofilefragment"
+        android:name="com.example.tfg.UserProfileFragment"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile" />
 
 </navigation>

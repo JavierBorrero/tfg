@@ -68,7 +68,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         
         // Personas Recycler
         binding.recyclerUsuarios.setLayoutManager(new LinearLayoutManager(getContext()));
-        userAdapter = new UserAdapter(userList, null, null);
+        userAdapter = new UserAdapter(userList, null, null, new UserAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Usuario usuario) {
+                
+            }
+        });
         binding.recyclerUsuarios.setAdapter(userAdapter);
         
         // Posts Recycler

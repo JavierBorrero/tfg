@@ -35,6 +35,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,13 +44,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class PostDetailFragment extends Fragment implements View.OnClickListener, UserAdapter.OnUserLongClickListener {
+public class PostDetailFragment extends Fragment implements View.OnClickListener, UserAdapter.OnUserLongClickListener, UserAdapter.OnItemClickListener {
     
     FragmentPostDetailBinding binding;
     private UserAdapter userAdapter;
     private List<Usuario> userList;
     
-    String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, fechaFormateada, imageUrl;
+    String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, fechaFormateada, imageUrl, userIdAuth;
     Date fecha;
     long fechaLong;
     int numeroPersonas;
@@ -92,10 +93,12 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         activity = (MainActivity) getActivity();
+        
+        userIdAuth = auth.getCurrentUser().getUid();
 
         binding.recyclerPersonas.setLayoutManager(new LinearLayoutManager(getContext()));
         userList = new ArrayList<>();
-        userAdapter = new UserAdapter(userList, postUserId, this);
+        userAdapter = new UserAdapter(userList, postUserId, this, this);
         binding.recyclerPersonas.setAdapter(userAdapter);
         
         // Recuperar datos del Bundle
@@ -273,6 +276,23 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
             activity.goToFragment(editPostFragment, R.id.editpostfragment);
         }
     }
+    
+    private void openUserDetail(Usuario usuario){
+        Bundle bundle = new Bundle();
+        bundle.putString("nombre", usuario.getNombre());
+        bundle.putString("apellido", usuario.getApellido());
+        bundle.putString("email", usuario.getEmail());
+        bundle.putInt("telefono", usuario.getTelefono());
+        bundle.putString("imagePfpUrl", usuario.getImagePfpUrl());
+        
+        UserProfileFragment userProfileFragment = new UserProfileFragment();
+        userProfileFragment.setArguments(bundle);
+        
+        if(activity != null){
+            activity.goToFragment(userProfileFragment, R.id.userprofilefragment);
+        }
+        
+    }
 
     @Override
     public void onClick(View view) {
@@ -300,5 +320,14 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+
+    @Override
+    public void onItemClick(Usuario usuario) {
+        if(usuario.getId().equals(userIdAuth)){
+            activity.goToFragment(new AccountFragment(), R.id.accountfragment);
+        }else{
+            openUserDetail(usuario);
+        }
     }
 }
