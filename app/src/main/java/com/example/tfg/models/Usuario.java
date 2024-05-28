@@ -2,6 +2,8 @@ package com.example.tfg.models;
 
 public class Usuario {
     
+    public String id;
+    
     public String nombre;
     
     public String apellido;
@@ -14,12 +16,21 @@ public class Usuario {
     
     public Usuario(){}
     
-    public Usuario(String nombre, String apellido, String email, String imagePfpUrl, int telefono){
+    public Usuario(String id, String nombre, String apellido, String email, String imagePfpUrl, int telefono){
+        this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.imagePfpUrl = imagePfpUrl;
         this.telefono = telefono;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNombre() {

@@ -1,6 +1,8 @@
 package com.example.tfg;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +26,13 @@ import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.RegistroActividad;
 import com.example.tfg.utils.UserAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -38,7 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class PostDetailFragment extends Fragment implements View.OnClickListener {
+public class PostDetailFragment extends Fragment implements View.OnClickListener, UserAdapter.OnUserLongClickListener {
     
     FragmentPostDetailBinding binding;
     private UserAdapter userAdapter;
@@ -49,10 +54,13 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     long fechaLong;
     int numeroPersonas;
     boolean materialNecesario, estaRegistrado;
-    
+    Map<String, Object> usuariosRegistrados;
+
     FirebaseAuth auth;
     FirebaseFirestore db;
     MainActivity activity;
+
+    EnviarCorreos enviarCorreos;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,14 +74,10 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
-        binding.recyclerPersonas.setLayoutManager(new LinearLayoutManager(getContext()));
-        userList = new ArrayList<>();
-        userAdapter = new UserAdapter(userList);
-        binding.recyclerPersonas.setAdapter(userAdapter);
         
         if(getArguments() != null){
             postId = getArguments().getString("id");
+            postUserId = getArguments().getString("userId");
             userId = auth.getCurrentUser().getUid();
             
             comprobarUsuarioRegistrado(postId, userId, binding.btnActividad);
@@ -87,7 +91,12 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        activity = (MainActivity) getActivity(); 
+        activity = (MainActivity) getActivity();
+
+        binding.recyclerPersonas.setLayoutManager(new LinearLayoutManager(getContext()));
+        userList = new ArrayList<>();
+        userAdapter = new UserAdapter(userList, postUserId, this);
+        binding.recyclerPersonas.setAdapter(userAdapter);
         
         // Recuperar datos del Bundle
         if(getArguments() != null){
@@ -148,7 +157,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
                     if(document.exists()){
-                        Map<String, Object> usuariosRegistrados = (Map<String, Object>) document.get("usuariosRegistrados");
+                        usuariosRegistrados = (Map<String, Object>) document.get("usuariosRegistrados");
                         int totalUsuariosRegistrados = usuariosRegistrados != null ? usuariosRegistrados.size() : 0;
                         int maximoUsuariosRegistrados = document.getLong("numeroPersonas").intValue();
 
@@ -181,17 +190,17 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     
     private void operacionRegistro(String postId, String userId){
         RegistroActividad registroActividad = new RegistroActividad();
-        EnviarCorreos enviarCorreos = new EnviarCorreos();
+        enviarCorreos = new EnviarCorreos();
         Context context = getContext();
         
         if(estaRegistrado){
             registroActividad.eliminarUsuarioActividad(context, postId, userId);
-            enviarCorreos.enviarEmailActividad(context, postUserId, userId, titulo, false);
+            enviarCorreos.enviarEmailUsuarioActividad(context, postUserId, userId, titulo, false);
             binding.btnActividad.setText("Apuntarse");
             estaRegistrado = false;
         }else{
             registroActividad.registrarUsuarioActividad(context, postId, userId);
-            enviarCorreos.enviarEmailActividad(context, postUserId, userId, titulo, true);
+            enviarCorreos.enviarEmailUsuarioActividad(context, postUserId, userId, titulo, true);
             binding.btnActividad.setText("Eliminarse");
             estaRegistrado = true;
         }
@@ -207,12 +216,39 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
                 if(documentSnapshot.exists()){
                     Usuario usuario = documentSnapshot.toObject(Usuario.class);
                     if(usuario != null){
+                        usuario.setId(documentSnapshot.getId());
+                        usuario.setEmail(documentSnapshot.getString("email"));
                         userList.add(usuario);
-                        userAdapter.notifyDataSetChanged();
+                        userAdapter.notifyItemInserted(userList.size() - 1);
                     }
                 }
             }
         });
+    }
+
+    private void eliminarUsuario(Usuario usuario, int position) {
+
+        String userIdToDelete = usuario.getId();
+        String emailUsuario = usuario.getEmail();
+        
+        if(userIdToDelete != null && usuariosRegistrados.containsKey(userIdToDelete)){
+            usuariosRegistrados.remove(userIdToDelete);
+
+            db.collection("posts").document(postId)
+                    .update("usuariosRegistrados." + userIdToDelete, FieldValue.delete())
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(getContext(), "Usuario eliminado", Toast.LENGTH_SHORT).show();
+                        userList.remove(position);
+                        userAdapter.notifyItemRemoved(position);
+                        enviarCorreos = new EnviarCorreos();
+                        enviarCorreos.enviarCorreoAutorEliminaUsuario(getContext(), postUserId, emailUsuario, titulo);
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(getContext(), "El usuario no existe en el mapa o ID es null", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void openEditPost(){
@@ -249,5 +285,20 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         if(i == R.id.btnEditarPost){
             openEditPost();
         }
+    }
+
+    @Override
+    public void onUserLongClick(Usuario usuario, int position) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Eliminar Usuario")
+                .setMessage("¿Deseas eliminar este usuario de la actividad?")
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        eliminarUsuario(usuario, position);
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 }

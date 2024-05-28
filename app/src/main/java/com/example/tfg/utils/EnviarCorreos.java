@@ -21,13 +21,15 @@ public class EnviarCorreos {
     String emailPostUser;
     String nombre;
     String apellidos;
+    String nombreAutor;
+    String apellidoAutor;
     FirebaseFirestore db;
     
     public EnviarCorreos(){
         db = FirebaseFirestore.getInstance();
     }
     
-    public void enviarEmailActividad(Context context, String postUserId, String userId, String tituloActividad, boolean flag){
+    public void enviarEmailUsuarioActividad(Context context, String postUserId, String userId, String tituloActividad, boolean flag){
         
         DocumentReference userPostRef = db.collection("usuarios").document(postUserId);
         
@@ -106,6 +108,42 @@ public class EnviarCorreos {
                     }
                 });
     }
+    
+    public void enviarCorreoAutorEliminaUsuario(Context context, String postUserId, String emailUsuario, String tituloActividad){
+        DocumentReference userRef = db.collection("usuarios").document(postUserId);
+        
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        nombreAutor = document.getString("nombre");
+                        apellidoAutor = document.getString("apellido");
+                    }
+                }
+            }
+        });
+        
+        Map<String, Object> emailMessage = new HashMap<>();
+        emailMessage.put("subject", nombreAutor + " " + apellidoAutor + " te ha eliminado de su actividad");
+        emailMessage.put("text", "El usuario " + nombreAutor + " " + apellidoAutor + " te ha eliminado de su actividad: " + tituloActividad + "\n" + 
+                "Entra en la aplicacion y contacta con el para descubrir el porque" + "\n\n" + 
+                "DAM TFG JAVIER BORRERO DEL CERRO");
+        
+        Map<String, Object> emailData = new HashMap<>();
+        emailData.put("to", emailUsuario);
+        emailData.put("message", emailMessage);
+        
+        db.collection("mail").document()
+                .set(emailData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        mostrarPopupMensaje(context, "Se ha eliminado al usuario de la actividad y se le ha enviado un mensaje");
+                    }
+                });
+    }
+    
     
     private void mostrarPopupMensaje(Context context, String mensaje){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

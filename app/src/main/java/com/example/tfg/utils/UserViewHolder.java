@@ -18,10 +18,21 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
     ImageView usuarioPfp;
     TextView usuarioNombre;
 
-    public UserViewHolder(@NonNull View itemView) {
+    public UserViewHolder(@NonNull View itemView, UserAdapter.OnUserLongClickListener listener) {
         super(itemView);
         usuarioPfp = itemView.findViewById(R.id.userPhoto);
         usuarioNombre = itemView.findViewById(R.id.userName);
+
+        itemView.setOnLongClickListener(v -> {
+            if (listener != null) {
+                int position = getBindingAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onUserLongClick((Usuario) v.getTag(), position); // Utilizar la etiqueta asociada
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     public void bind(Usuario usuario) {
