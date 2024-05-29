@@ -76,5 +76,29 @@
         android:name="com.example.tfg.UserProfileFragment"
         android:label="UserProfileFragment"
         tools:layout="@layout/fragment_user_profile" />
+    
+    <fragment
+        android:id="@+id/anunciosfragment"
+        android:name="com.example.tfg.AnunciosFragment"
+        android:label="AnunciosFragment"
+        tools:layout="@layout/fragment_anuncios" />
+    
+    <fragment
+        android:id="@+id/anunciodetailfragment"
+        android:name="com.example.tfg.AnuncioDetailFragment"
+        android:label="AnucioDetailFragment"
+        tools:layout="@layout/fragment_anuncio_detail" />
+    
+    <fragment
+        android:id="@+id/newanunciofragment"
+        android:name="com.example.tfg.NewAnuncioFragment"
+        android:label="NewAnuncioFragment"
+        tools:layout="@layout/fragment_new_anuncio" />
+    
+    <fragment
+        android:id="@+id/editanunciofragment"
+        android:name="com.example.tfg.EditAnuncioFragment"
+        android:label="EditAnuncioFragment"
+        tools:layout="@layout/fragment_edit_anuncio" />
 
 </navigation>

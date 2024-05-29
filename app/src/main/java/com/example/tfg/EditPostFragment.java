@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentEditPostBinding;
+import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.ValidarFormularios;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,6 +37,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
     long fechaLong;
     Uri uri;
     Timestamp firebaseTimeStamp, oldFirebaseTimeStamp;
+    ArrayList<String> emailList;
     
     boolean isUploading = false;
 
@@ -102,7 +105,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
             nombreAutor = getArguments().getString("nombreAutor");
             imageUrl = getArguments().getString("imageUrl");
             usuariosRegistrados = getArguments().getInt("usuariosRegistrados");
-            
+            emailList = getArguments().getStringArrayList("emailList");
         }
         
         return binding.getRoot();
@@ -227,6 +230,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
+                        correoActualizar(emailList);
                         Toast.makeText(getContext(), "Post editado con exito", Toast.LENGTH_SHORT).show();
                         activity.goToFragment(new PostsFragment(), R.id.postsfragment);
                     }
@@ -264,6 +268,13 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
                     Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+    }
+    
+    private void correoActualizar(ArrayList<String> emailList){
+        EnviarCorreos enviarCorreos = new EnviarCorreos();
+        for(String email : emailList){
+            enviarCorreos.enviarCorreoEditarPost(getContext(), postUserId, email, titulo);
         }
     }
     

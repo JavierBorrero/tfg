@@ -15,6 +15,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,11 @@ public class EnviarCorreos {
         db = FirebaseFirestore.getInstance();
     }
     
+    /*
+        Dependiendo del boolean se mandara el email si:
+        - El usuario se añade a la actividad
+        - El usuario se elimina de la actividad
+     */
     public void enviarEmailUsuarioActividad(Context context, String postUserId, String userId, String tituloActividad, boolean flag){
         
         DocumentReference userPostRef = db.collection("usuarios").document(postUserId);
@@ -111,6 +117,7 @@ public class EnviarCorreos {
                 });
     }
     
+    // Se envia un correo cuando el autor elimina a un usuario
     public void enviarCorreoAutorEliminaUsuario(Context context, String postUserId, String emailUsuario, String tituloActividad){
         DocumentReference userRef = db.collection("usuarios").document(postUserId);
         
@@ -151,6 +158,7 @@ public class EnviarCorreos {
                 });
     }
     
+    // Se envia un correo al contactar con otro usuario
     public void enviarCorreoContactarOtroUsuario(Context context, String userId, String emailUsuario){
         DocumentReference userRef = db.collection("usuarios").document(userId);
         
@@ -168,9 +176,6 @@ public class EnviarCorreos {
                         emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " esta intentando contactar contigo en la aplicacion." + "\n\n" +
                                 "Entra en la aplicacion y ponte en contacto con el" + "\n\n\n" +
                                 "DAM TFG JAVIER BORRERO DEL CERRO");
-
-                        Log.d("DEBUG", "NOMBRE: "+ nombre);
-                        Log.d("DEBUG", "APELLIDO: "+ apellidos);
         
                         Map<String, Object> emailData = new HashMap<>();
                         emailData.put("to", emailUsuario);
@@ -193,6 +198,48 @@ public class EnviarCorreos {
             }
         });
     }
+    
+    // Enviar email a los usuarios cuando se actualize una actividad
+    public void enviarCorreoEditarPost(Context context, String userId, String emailUsuario, String tituloActividad){
+        DocumentReference userRef = db.collection("usuarios").document(userId);
+        
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        nombre = document.getString("nombre");
+                        apellidos = document.getString("apellido");
+                        
+                        Map<String, Object> emailMessage = new HashMap<>();
+                        emailMessage.put("subject", "Se han realizado cambios en la actividad: " + tituloActividad);
+                        emailMessage.put("text", nombre + " " + apellidos + " ha realizado cambios en la actividad: " + tituloActividad + "\n\n" +
+                                "Entra en la aplicacion y descubre los nuevos cambios." + "\n\n\n" +
+                                "DAM TFG JAVIER BORRERO DEL CERRO");
+                        
+                        Map<String, Object> emailData = new HashMap<>();
+                        emailData.put("to", emailUsuario);
+                        emailData.put("message", emailMessage);
+                        
+                        db.collection("mail").document()
+                                .set(emailData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        mostrarPopupMensaje(context, "Se ha enviado un mensaje a los usuarios sobre la actualizacion de la actividad");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            }
+        });
+    }
+    
     
     
     private void mostrarPopupMensaje(Context context, String mensaje){

@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
                     goToFragment(new SearchFragment(), R.id.searchfragment);
                 } else if (itemId == R.id.accountfragment) {
                     goToFragment(new AccountFragment(), R.id.accountfragment);
+                } else if (itemId == R.id.anunciosfragment) {
+                    goToFragment(new AnunciosFragment(), R.id.anunciosfragment);
                 }
 
                 disableNavigationTemporarily();

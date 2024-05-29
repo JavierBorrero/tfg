@@ -16,7 +16,7 @@ public class ValidarFormularios {
         if(tituloTrim.isEmpty()){
             titulo.setError("Titulo vacio");
             validar = false;
-        } else if (tituloTrim.length() < 5) {
+        } else if (tituloTrim.length() < 10) {
             titulo.setError("Titulo demasiado corto");
             validar = false;
         }else{
@@ -77,6 +77,35 @@ public class ValidarFormularios {
             numeroPersonas.setError(null);
         }
 
+        return validar;
+    }
+    
+    public boolean validarNuevoYEditarAnuncio(EditText titulo, EditText descripcion){
+        boolean validar = true;
+        
+        String tituloTrim = titulo.getText().toString().trim();
+        String descripcionTrim = descripcion.getText().toString().trim();
+
+        if(tituloTrim.isEmpty()){
+            titulo.setError("Titulo vacio");
+            validar = false;
+        } else if (tituloTrim.length() < 10) {
+            titulo.setError("Titulo demasiado corto");
+            validar = false;
+        }else{
+            titulo.setError(null);
+        }
+
+        if(descripcionTrim.isEmpty()){
+            descripcion.setError("Descripcion vacia");
+            validar = false;
+        } else if (descripcionTrim.length() < 40) {
+            descripcion.setError("Descripcion demasiado corta");
+            validar = false;
+        }else{
+            descripcion.setError(null);
+        }
+        
         return validar;
     }
 }

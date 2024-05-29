@@ -66,7 +66,6 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
     }
 
     @Override
@@ -268,6 +267,13 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         bundle.putString("nombreAutor", nombreAutor);
         bundle.putString("imageUrl", imageUrl);
         bundle.putInt("usuariosRegistrados", userList.size());
+        
+        ArrayList<String> emailList = new ArrayList<>();
+        for(Usuario usuario : userList){
+            emailList.add(usuario.getEmail());
+        }
+        
+        bundle.putStringArrayList("emailList", emailList);
 
         EditPostFragment editPostFragment = new EditPostFragment();
         editPostFragment.setArguments(bundle);

@@ -6,6 +6,11 @@
         android:title="@string/title_posts" />
 
     <item
+        android:id="@id/anunciosfragment"
+        android:icon="@drawable/icon_anuncio"
+        android:title="@string/title_anuncios" />
+
+    <item
         android:id="@id/searchfragment"
         android:icon="@drawable/icon_search"
         android:title="@string/title_search" />

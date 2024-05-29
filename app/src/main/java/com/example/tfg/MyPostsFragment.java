@@ -34,6 +34,7 @@ import java.util.List;
 public class MyPostsFragment extends Fragment {
 
     FragmentMyPostsBinding binding;
+    MainActivity activity;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private FirebaseAuth auth;
@@ -54,6 +55,8 @@ public class MyPostsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        activity = (MainActivity) getActivity(); 
 
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -62,7 +65,7 @@ public class MyPostsFragment extends Fragment {
         postAdapter = new PostAdapter(postList, storage, new PostAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Post post) {
-                
+                openPostDetail(post);
             }
         });
 
@@ -105,5 +108,26 @@ public class MyPostsFragment extends Fragment {
                         }
                     }
                 });
+    }
+    
+    private void openPostDetail(Post post){
+        Bundle bundle = new Bundle();
+        bundle.putString("id", post.getId());
+        bundle.putString("userId", post.getUserId());
+        bundle.putString("titulo", post.getTitulo());
+        bundle.putString("descripcion", post.getDescripcion());
+        bundle.putString("localizacion", post.getLocalizacion());
+        bundle.putLong("fecha", post.getFechaHora().getTime());
+        bundle.putInt("numeroPersonas", post.getNumeroPersonas());
+        bundle.putBoolean("materialNecesario", post.isMaterial());
+        bundle.putString("nombreAutor", post.getNombreAutor());
+        bundle.putString("imageUrl", post.getImageUrl());
+
+        PostDetailFragment postDetailFragment = new PostDetailFragment();
+        postDetailFragment.setArguments(bundle);
+
+        if(activity != null){
+            activity.goToFragment(postDetailFragment, R.id.postdetailfragment);
+        }
     }
 }

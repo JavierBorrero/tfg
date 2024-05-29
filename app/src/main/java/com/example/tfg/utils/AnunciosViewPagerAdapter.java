@@ -5,12 +5,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.tfg.AllPostsFragment;
-import com.example.tfg.MyPostsFragment;
+import com.example.tfg.AllAnunciosFragment;
+import com.example.tfg.MisAnunciosFragment;
 
-public class ViewPagerAdapter extends FragmentStateAdapter {
+public class AnunciosViewPagerAdapter extends FragmentStateAdapter {
     
-    public ViewPagerAdapter(@NonNull Fragment fragment) {
+    public AnunciosViewPagerAdapter(@NonNull Fragment fragment) {
         super(fragment);
     }
 
@@ -18,9 +18,9 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if(position == 0){
-            return new AllPostsFragment();
+            return new AllAnunciosFragment();
         }else{
-            return new MyPostsFragment();
+            return new MisAnunciosFragment();
         }
     }
 
