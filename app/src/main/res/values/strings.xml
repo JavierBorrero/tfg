@@ -67,6 +67,7 @@
     <string name="post_detail_numero_personas">Numero Personas</string>
     <string name="post_detail_material">Material Necesario</string>
     <string name="btn_apuntar_actividad">Apuntarme</string>
+    <string name="btn_descargar_pdf">Descargar PDF</string>
     <string name="btn_editar_post">Editar anuncio</string>
     <string name="btn_eliminar_post">Eliminar anuncio</string>
     <string name="post_detail_personas">Personas apuntadas</string>

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentPostDetailBinding;
 import com.example.tfg.models.Post;
 import com.example.tfg.models.Usuario;
+import com.example.tfg.utils.DescargarPdf;
 import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.RegistroActividad;
 import com.example.tfg.utils.UserAdapter;
@@ -34,7 +36,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -146,6 +155,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         }
         
         binding.btnActividad.setOnClickListener(this);
+        binding.btnDescargarPdf.setOnClickListener(this);
         binding.btnEditarPost.setOnClickListener(this);
         binding.btnBorrarPost.setOnClickListener(this);
         
@@ -360,6 +370,20 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         
         if(i == R.id.btnActividad){
             operacionRegistro(postId,userId);
+        }
+        
+        if(i == R.id.btnDescargarPdf){
+            DescargarPdf descargarPdf = new DescargarPdf();
+            descargarPdf.createPdf(
+                    getContext(),
+                    titulo,
+                    descripcion,
+                    localizacion,
+                    fechaFormateada,
+                    String.valueOf(numeroPersonas),
+                    materialNecesario ? "Si" : "No",
+                    nombreAutor
+            );
         }
         
         if(i == R.id.btnEditarPost){

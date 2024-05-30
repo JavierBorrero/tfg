@@ -50,6 +50,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.itextpdf:itext7-core:7.1.15")
 
     implementation(libs.appcompat)
     implementation(libs.material)
