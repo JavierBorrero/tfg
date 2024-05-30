@@ -147,6 +147,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         
         binding.btnActividad.setOnClickListener(this);
         binding.btnEditarPost.setOnClickListener(this);
+        binding.btnBorrarPost.setOnClickListener(this);
         
     }
     
@@ -253,6 +254,59 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         }
     }
     
+    private void popUpEliminarPost(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        
+        builder.setTitle("Eliminar Actividad");
+        builder.setMessage("Va a proceder a eliminar la actividad. ¿Esta seguro?");
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                eliminarPost();
+            }
+        });
+        
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    
+    private void eliminarPost(){
+        enviarCorreos = new EnviarCorreos();
+        ArrayList<String> emailList = new ArrayList<>();
+        
+        for(Usuario usuario : userList){
+            emailList.add(usuario.getEmail());
+        }
+        
+        db.collection("posts").document(postId)
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        for(String email : emailList){
+                            enviarCorreos.enviarCorreoEliminarPost(getContext(), postUserId, email, titulo);
+                        }
+                        enviarCorreos.mostrarPopupMensaje(getContext(), "Se ha enviado un mensaje a los usuarios sobre la eliminacion de la actividad");
+                        if(activity != null){
+                            activity.goToFragment(new PostsFragment(), R.id.postsfragment);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    
     private void openEditPost(){
         Bundle bundle = new Bundle();
         bundle.putString("id", postId);
@@ -310,6 +364,10 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         
         if(i == R.id.btnEditarPost){
             openEditPost();
+        }
+        
+        if(i == R.id.btnBorrarPost){
+            popUpEliminarPost();
         }
     }
 

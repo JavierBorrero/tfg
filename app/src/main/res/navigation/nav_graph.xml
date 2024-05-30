@@ -100,5 +100,11 @@
         android:name="com.example.tfg.EditAnuncioFragment"
         android:label="EditAnuncioFragment"
         tools:layout="@layout/fragment_edit_anuncio" />
+    
+    <fragment
+        android:id="@+id/misactividadesfragment"
+        android:name="com.example.tfg.MisActividadesFragment"
+        android:label="MisActividadesFragment"
+        tools:layout="@layout/fragment_mis_actividades" />
 
 </navigation>

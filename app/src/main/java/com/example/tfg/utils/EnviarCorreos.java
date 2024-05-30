@@ -226,7 +226,47 @@ public class EnviarCorreos {
                                 .set(emailData).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        mostrarPopupMensaje(context, "Se ha enviado un mensaje a los usuarios sobre la actualizacion de la actividad");
+                                        
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            }
+        });
+    }
+    
+    public void enviarCorreoEliminarPost(Context context, String userId, String emailUsuario, String tituloActividad){
+        DocumentReference userRef = db.collection("usuarios").document(userId);
+        
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        nombre = document.getString("nombre");
+                        apellidos = document.getString("apellido");
+
+                        Map<String, Object> emailMessage = new HashMap<>();
+                        emailMessage.put("subject", "Se ha eliminado la actividad: " + tituloActividad);
+                        emailMessage.put("text", nombre + " " + apellidos + " ha eliminado la actividad: " + tituloActividad + "\n\n" +
+                                "Entra en la aplicacion y ponte en contacto con el para saber el porque." + "\n\n\n" +
+                                "DAM TFG JAVIER BORRERO DEL CERRO");
+
+                        Map<String, Object> emailData = new HashMap<>();
+                        emailData.put("to", emailUsuario);
+                        emailData.put("message", emailMessage);
+
+                        db.collection("mail").document()
+                                .set(emailData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -242,7 +282,7 @@ public class EnviarCorreos {
     
     
     
-    private void mostrarPopupMensaje(Context context, String mensaje){
+    public void mostrarPopupMensaje(Context context, String mensaje){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         
         builder.setTitle("Confirmacion");

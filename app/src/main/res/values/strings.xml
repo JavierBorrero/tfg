@@ -36,9 +36,11 @@
     <string name="btn_logout">Cerrar sesion</string>
     <string name="btn_edit">Editar Perfil</string>
     <string name="btn_eliminar">Eliminar mi perfil</string>
+    <string name="btn_mis_actividades">Mis Actividades</string>
     <string name="text_email">email</string>
     <string name="text_nombre">nombre</string>
     <string name="text_apellidos">apellidos</string>
+    <string name="text_telefono">telefono</string>
 
     <!-- === STRINGS EDITPROFILE === -->
     <string name="hint_nombre_edit_profile">Nombre…</string>
@@ -89,6 +91,8 @@
     <!-- === STRINGS ANUNCIO DETAIL === -->
     <string name="btn_editar_anuncio">Editar Anuncio</string>
     <string name="btn_eliminar_anuncio">Eliminar Anuncio</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    <!-- === STRINGS MIS ACTIVIDADES === -->
+    <string name="titulo_mis_actividades">Mis Actividades</string>
+    <string name="titulo_ninguna_actividad">Aun no estas apuntado a ninguna actividad</string>
 </resources>

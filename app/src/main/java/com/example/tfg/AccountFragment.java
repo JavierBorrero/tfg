@@ -30,15 +30,14 @@ import com.google.firebase.storage.StorageReference;
 
 public class AccountFragment extends Fragment implements View.OnClickListener {
     
-    FirebaseAuth mAuth;
+    FirebaseAuth auth;
     FirebaseFirestore db;
     StorageReference storageReference;
     MainActivity activity;
     
-    private FragmentAccountBinding binding;
+    FragmentAccountBinding binding;
     
-    TextView email, nombre, apellidos;
-    
+    TextView email, nombre, apellidos, telefono;
     ImageView imagen;
     
     String userId;
@@ -61,10 +60,11 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         email = binding.textEmail;
         nombre = binding.textNombre;
         apellidos = binding.textApellidos;
+        telefono = binding.textTelefono;
         imagen = binding.profilePic;
 
         // Instancias
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         activity = (MainActivity) getActivity();
         
@@ -73,12 +73,13 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         obtenerDatosUsuario();
         
         binding.btnLogout.setOnClickListener(this);
+        binding.btnMisActividades.setOnClickListener(this);
         binding.btnEditProfile.setOnClickListener(this);
     }
     
     private void obtenerDatosUsuario(){
         
-        userId = mAuth.getCurrentUser().getUid();
+        userId = auth.getCurrentUser().getUid();
 
         DocumentReference docRef = db.collection("usuarios").document(userId);
 
@@ -90,6 +91,12 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                     email.setText(usuario.getEmail());
                     nombre.setText(usuario.getNombre());
                     apellidos.setText(usuario.getApellido());
+                    telefono.setText(String.valueOf(usuario.getTelefono()));
+                    if(usuario.getImagePfpUrl() != null){
+                        Glide.with(getContext()).load(usuario.getImagePfpUrl()).into(imagen);
+                    }else{
+                        Glide.with(getContext()).load(R.drawable.icon_person_profile).into(imagen);
+                    }
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -99,13 +106,13 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
             }
         });
         
-        StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
+        /*StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
         reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Glide.with(imagen.getContext()).load(uri).into(imagen);
             }
-        });
+        });*/
     }
     
     @Override
@@ -122,6 +129,12 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         if(i == R.id.btnEditProfile){
             if(activity != null){
                 activity.goToFragment(new EditProfileFragment(), R.id.editprofilefragment);
+            }
+        }
+        
+        if(i == R.id.btnMisActividades){
+            if(activity != null){
+                activity.goToFragment(new MisActividadesFragment(), R.id.misactividadesfragment);
             }
         }
     }

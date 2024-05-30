@@ -98,6 +98,7 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                             postAdapter.notifyDataSetChanged();
                         });
                     }
+                    
                 }
             }
         });

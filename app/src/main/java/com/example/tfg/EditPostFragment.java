@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentEditPostBinding;
+import com.example.tfg.utils.CustomOnCheckedChangeListener;
+import com.example.tfg.utils.CustomTextWatcher;
 import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.ValidarFormularios;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -70,6 +72,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
                         if (result.getData() != null) {
                             uri = result.getData().getData();
                             binding.fotoPrevia.setImageURI(uri);
+                            checkForChanges();
                         }
                     }
                 }
@@ -132,6 +135,49 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
         binding.editFechaHora.setOnClickListener(this);
         binding.editImagen.setOnClickListener(this);
         
+        addTextWatchers();
+        checkForChanges();
+    }
+    
+    private void addTextWatchers(){
+        CustomTextWatcher textWatcher = new CustomTextWatcher(this::checkForChanges);
+        
+        binding.editTitulo.addTextChangedListener(textWatcher);
+        binding.editDescripcion.addTextChangedListener(textWatcher);
+        binding.editLocalizacion.addTextChangedListener(textWatcher);
+        binding.editNumeroPersonas.addTextChangedListener(textWatcher);
+        binding.editMaterial.setOnCheckedChangeListener(new CustomOnCheckedChangeListener(this::checkForChanges));
+    }
+    
+    private void checkForChanges(){
+        
+        String currentTitulo = binding.editTitulo.getText().toString().trim();
+        String currentDescripcion = binding.editDescripcion.getText().toString().trim();
+        String currentLocalizacion = binding.editLocalizacion.getText().toString().trim();
+        String currentFecha = binding.editFechaHora.getText().toString().trim();
+        
+        String numeroPersonasText = binding.editNumeroPersonas.getText().toString().trim();
+        int currentNumeroPersonas = 0;
+        
+        if(!numeroPersonasText.isEmpty()){
+            try{
+                currentNumeroPersonas = Integer.parseInt(numeroPersonasText);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        
+        boolean currentMaterial = binding.editMaterial.isChecked();
+        
+        boolean hasChanges = !currentTitulo.equals(titulo) ||
+                !currentDescripcion.equals(descripcion) ||
+                !currentLocalizacion.equals(localizacion) ||
+                !currentFecha.equals(fechaString) ||
+                currentNumeroPersonas != numeroPersonas ||
+                currentMaterial != materialNecesario ||
+                uri != null;
+        
+        binding.btnConfirmEdit.setEnabled(hasChanges);
     }
 
     private void obtenerFechaYHora(){
@@ -157,6 +203,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
                         firebaseTimeStamp = new Timestamp(date);
 
                         binding.editFechaHora.setText(dayOfMonth+"/"+(month+1)+"/"+year+" - "+hourOfDay+":"+minute);
+                        checkForChanges();
                     }
                 }, mHour, mMinute, true);
                 timePickerDialog.show();
@@ -276,6 +323,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
         for(String email : emailList){
             enviarCorreos.enviarCorreoEditarPost(getContext(), postUserId, email, titulo);
         }
+        enviarCorreos.mostrarPopupMensaje(getContext(), "Se ha enviado un mensaje a los usuarios sobre la actualizacion de la actividad");
     }
     
     private void disableButtonForDelay(long delayMillis){
