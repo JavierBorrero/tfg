@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.example.tfg.databinding.FragmentAllAnunciosBinding;
 import com.example.tfg.models.Anuncio;
-import com.example.tfg.utils.AnuncioAdapter;
+import com.example.tfg.utils.adapters.AnuncioAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;

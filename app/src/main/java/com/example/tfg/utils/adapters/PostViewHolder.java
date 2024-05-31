@@ -1,4 +1,4 @@
-package com.example.tfg.utils;
+package com.example.tfg.utils.adapters;
 
 import android.net.Uri;
 import android.view.View;
@@ -9,28 +9,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.R;
-import com.example.tfg.models.Anuncio;
+import com.example.tfg.models.Post;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class AnuncioViewHolder extends RecyclerView.ViewHolder {
-    
+public class PostViewHolder extends RecyclerView.ViewHolder {
+
     ImageView autorPfp;
-    TextView autorNombre, anuncioTitulo;
+    TextView autorNombre, postTitulo;
     
-    public AnuncioViewHolder(View view){
+    public PostViewHolder(View view){
         super(view);
         autorPfp = view.findViewById(R.id.postAuthorPhoto);
         autorNombre = view.findViewById(R.id.postAuthorName);
-        anuncioTitulo = view.findViewById(R.id.postTitle);
+        postTitulo = view.findViewById(R.id.postTitle);
     }
     
-    public void bind(Anuncio anuncio, FirebaseStorage storage, AnuncioAdapter.OnItemClickListener listener){
-        autorNombre.setText(anuncio.getNombreAutor());
-        anuncioTitulo.setText(anuncio.getTitulo());
+    public void bind(Post post, FirebaseStorage storage, PostAdapter.OnItemClickListener listener){
+        autorNombre.setText(post.getNombreAutor());
+        postTitulo.setText(post.getTitulo());
 
-        StorageReference pfpRef = storage.getReference().child("images/"+anuncio.getUserId()+"/pfp/");
+        StorageReference pfpRef = storage.getReference().child("images/" + post.getUserId() + "/pfp/");
         pfpRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -41,7 +41,7 @@ public class AnuncioViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onItemClick(anuncio);
+                listener.onItemClick(post);
             }
         });
     }

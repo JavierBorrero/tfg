@@ -11,8 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tfg.databinding.FragmentAnunciosBinding;
-import com.example.tfg.utils.AnunciosViewPagerAdapter;
-import com.example.tfg.utils.PostsViewPagerAdapter;
+import com.example.tfg.utils.adapters.AnunciosViewPagerAdapter;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class AnunciosFragment extends Fragment {

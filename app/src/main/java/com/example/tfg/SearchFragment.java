@@ -7,6 +7,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +20,12 @@ import android.widget.Toast;
 import com.example.tfg.databinding.FragmentSearchBinding;
 import com.example.tfg.models.Post;
 import com.example.tfg.models.Usuario;
-import com.example.tfg.utils.UserAdapter;
-import com.example.tfg.utils.PostAdapter;
+import com.example.tfg.utils.adapters.UserAdapter;
+import com.example.tfg.utils.adapters.PostAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -33,17 +37,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SearchFragment extends Fragment implements View.OnClickListener {
+public class SearchFragment extends Fragment implements UserAdapter.OnItemClickListener {
     
     FragmentSearchBinding binding;
+    private MainActivity activity;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
+    private FirebaseAuth auth;
     private List<Post> postList;
     private List<Usuario> userList;
-    private Set<String> usersIds;
     private UserAdapter userAdapter;
     private PostAdapter postAdapter;
-    private boolean isSearching = false;
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable busquedaRunnable;
+    private String userIdAuth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,18 +69,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
+        auth = FirebaseAuth.getInstance();
+        activity = (MainActivity) getActivity(); 
         userList = new ArrayList<>();
         postList = new ArrayList<>();
-        usersIds = new HashSet<>();
+        
+        userIdAuth = auth.getCurrentUser().getUid();
         
         // Personas Recycler
         binding.recyclerUsuarios.setLayoutManager(new LinearLayoutManager(getContext()));
-        userAdapter = new UserAdapter(userList, null, null, new UserAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Usuario usuario) {
-                
-            }
-        });
+        userAdapter = new UserAdapter(userList, null, null, this);
         binding.recyclerUsuarios.setAdapter(userAdapter);
         
         // Posts Recycler
@@ -81,46 +86,62 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         postAdapter = new PostAdapter(postList, storage, new PostAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Post post) {
-                
+                openPostDetail(post);
             }
         });
         binding.recyclerPosts.setAdapter(postAdapter);
         
-        binding.btnBuscar.setOnClickListener(this);
+        binding.buscador.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                handler.removeCallbacks(busquedaRunnable);
+
+                busquedaRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        String textoBusqueda = editable.toString().trim();
+                        if(textoBusqueda.length() >= 3){
+                            realizarBusqueda(textoBusqueda);
+                        }
+                    }
+                };
+                handler.postDelayed(busquedaRunnable, 2000);
+            }
+        });
     }
     
-    private void busqueda(){
-        String query = binding.buscador.getText().toString().trim();
-        if(!query.isEmpty()){
-            realizarBusqueda(query);
-        }else{
-            Toast.makeText(getContext(), "Introduzca algo para buscar", Toast.LENGTH_SHORT).show();
-        }
-    }
-    
-    private void realizarBusqueda(String query){
-        binding.tituloUsuarios.setVisibility(View.VISIBLE);
-        binding.tituloPosts.setVisibility(View.VISIBLE);
-        buscarEnColeccionUsuarios(query);
-    }
-    
-    private void buscarEnColeccionUsuarios(String query){
+    private void realizarBusqueda(String textBusqueda){
+        String nombreBusqueda = textBusqueda.toLowerCase();
+        String finalNombreBusqueda = nombreBusqueda + "\uf8ff";
+        
         db.collection("usuarios")
-                .whereEqualTo("nombre", query)
+                .whereGreaterThanOrEqualTo("nombre_min", nombreBusqueda)
+                .whereLessThanOrEqualTo("nombre_min", finalNombreBusqueda)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             userList.clear();
-                            usersIds.clear();
+                            List<String> usersIds = new ArrayList<>();
                             for(QueryDocumentSnapshot document : task.getResult()){
+                                String userId = document.getId();
                                 Usuario usuario = document.toObject(Usuario.class);
+                                usuario.setId(userId);
                                 userList.add(usuario);
-                                usersIds.add(document.getId());
+                                usersIds.add(userId);
                             }
                             userAdapter.notifyDataSetChanged();
-                            buscarPostsPorUserId();
+                            obtenerPostsDeUsuarios(usersIds);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -129,9 +150,14 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                         Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+        
+        binding.tituloUsuarios.setVisibility(userList.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.viewTituloUsuarios.setVisibility(userList.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tituloPosts.setVisibility(postList.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.viewTituloPosts.setVisibility(postList.isEmpty() ? View.VISIBLE : View.GONE);
     }
     
-    private void buscarPostsPorUserId(){
+    private void obtenerPostsDeUsuarios(List<String> usersIds){
         postList.clear();
         for(String userId : usersIds){
             db.collection("posts")
@@ -154,47 +180,70 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                                     Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
-                                    db.collection("usuarios").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            String nombreAutor = documentSnapshot.getString("nombre");
-                                            post.setNombreAutor(nombreAutor);
-                                            postList.add(post);
-                                            postAdapter.notifyDataSetChanged();
-                                        }
+                                    db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
+                                        String authorName = userDoc.getString("nombre");
+                                        post.setNombreAutor(authorName);
+                                        postList.add(post);
+                                        postAdapter.notifyDataSetChanged();
                                     });
                                 }
                             }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         }
-                    });            
+                    });
         }
     }
     
-    private void disableButtonForDelay(long delayMillis){
-        binding.btnBuscar.setEnabled(false);
-        binding.btnBuscar.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                binding.btnBuscar.setEnabled(true);
-                isSearching = false;
+    private void openUserDetail(Usuario usuario){
+        if(usuario.getId().equals(userIdAuth)){
+            if(activity != null){
+                activity.goToFragment(new AccountFragment(), R.id.accountfragment);
             }
-        }, delayMillis);
+        }else{
+            Bundle bundle = new Bundle();
+            bundle.putString("nombre", usuario.getNombre());
+            bundle.putString("apellido", usuario.getApellido());
+            bundle.putString("email", usuario.getEmail());
+            bundle.putInt("telefono", usuario.getTelefono());
+            bundle.putString("imagePfpUrl", usuario.getImagePfpUrl());
+
+            UserProfileFragment userProfileFragment = new UserProfileFragment();
+            userProfileFragment.setArguments(bundle);
+
+            if(activity != null){
+                activity.goToFragment(userProfileFragment, R.id.userprofilefragment);
+            }
+        }
+    }
+    
+    private void openPostDetail(Post post){
+        Bundle bundle = new Bundle();
+        bundle.putString("id", post.getId());
+        bundle.putString("userId", post.getUserId());
+        bundle.putString("titulo", post.getTitulo());
+        bundle.putString("descripcion", post.getDescripcion());
+        bundle.putString("localizacion", post.getLocalizacion());
+        bundle.putLong("fecha", post.getFechaHora().getTime());
+        bundle.putInt("numeroPersonas", post.getNumeroPersonas());
+        bundle.putBoolean("materialNecesario", post.isMaterial());
+        bundle.putString("nombreAutor", post.getNombreAutor());
+        bundle.putString("imageUrl", post.getImageUrl());
+
+        PostDetailFragment postDetailFragment = new PostDetailFragment();
+        postDetailFragment.setArguments(bundle);
+
+        if(activity != null){
+            activity.goToFragment(postDetailFragment, R.id.postdetailfragment);
+        }
     }
 
     @Override
-    public void onClick(View view) {
-        int i = view.getId();
-        if(i == R.id.btnBuscar){
-            if(!isSearching){
-                isSearching = true;
-                disableButtonForDelay(2000);
-                busqueda();
-            }
-        }
+    public void onItemClick(Usuario usuario) {
+        openUserDetail(usuario);
     }
 }

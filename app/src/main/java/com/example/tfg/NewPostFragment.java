@@ -52,8 +52,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
     FirebaseFirestore db;
     StorageReference storageReference;
     MainActivity activity;
-    
-    private FragmentNewPostBinding binding;
+    FragmentNewPostBinding binding;
 
     EditText titulo, descripcion, localizacion, fechaHora, imagen, personas;
     

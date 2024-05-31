@@ -1,4 +1,4 @@
-package com.example.tfg.utils;
+package com.example.tfg.utils.adapters;
 
 import android.net.Uri;
 import android.view.View;
@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.tfg.R;
 import com.example.tfg.models.Usuario;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 public class UserViewHolder extends RecyclerView.ViewHolder {
     

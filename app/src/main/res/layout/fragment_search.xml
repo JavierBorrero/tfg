@@ -12,29 +12,18 @@
 
         <EditText
             android:id="@+id/buscador"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
             android:hint="@string/hint_buscador"
             android:inputType="text"
             android:maxLength="30"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnBuscar" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnBuscar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/icon_search"/>
-
-        <EditText
+            app:layout_constraintTop_toTopOf="parent" />
+        
+        <TextView
             android:id="@+id/tituloUsuarios"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,7 +34,18 @@
             android:textSize="24sp"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/buscador"
-            app:layout_constraintStart_toStartOf="@+id/buscador" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <View
+            android:id="@+id/viewTituloUsuarios"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:visibility="gone"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@+id/tituloUsuarios"
+            app:layout_constraintStart_toStartOf="@+id/tituloUsuarios"
+            app:layout_constraintEnd_toEndOf="@+id/tituloUsuarios"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerUsuarios"
@@ -58,8 +58,8 @@
             app:layout_constraintStart_toStartOf="@+id/tituloUsuarios"
             app:layout_constraintTop_toBottomOf="@+id/tituloUsuarios"
             tools:listitem="@layout/item_user"/>
-
-        <EditText
+        
+        <TextView
             android:id="@+id/tituloPosts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,7 +70,18 @@
             android:textSize="24sp"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@+id/recyclerUsuarios"
-            app:layout_constraintStart_toStartOf="@+id/recyclerUsuarios" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <View
+            android:id="@+id/viewTituloPosts"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:visibility="gone"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@+id/tituloPosts"
+            app:layout_constraintStart_toStartOf="@+id/tituloPosts"
+            app:layout_constraintEnd_toEndOf="@+id/tituloPosts"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerPosts"
@@ -87,93 +98,3 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
     
 </ScrollView>
-
-<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    tools:context=".SearchFragment">
-    
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        
-        <EditText
-            android:id="@+id/buscador"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:hint="@string/hint_buscador"
-            android:inputType="text"
-            android:maxLength="30"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnBuscar" />
-        
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnBuscar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/icon_search"/>
-        
-        <EditText
-            android:id="@+id/tituloUsuarios"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:text="@string/buscador_personas"
-            android:textSize="24sp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/buscador"
-            app:layout_constraintStart_toStartOf="@+id/buscador" />
-        
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerUsuarios"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:nestedScrollingEnabled="false"
-            app:layout_constraintStart_toStartOf="@+id/tituloUsuarios"
-            app:layout_constraintTop_toBottomOf="@+id/tituloUsuarios" 
-            tools:listitem="@layout/item_user"/>
-        
-        <EditText
-            android:id="@+id/tituloPosts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:text="@string/buscador_posts"
-            android:textSize="24sp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerUsuarios"
-            app:layout_constraintStart_toStartOf="@+id/recyclerUsuarios" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerPosts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:nestedScrollingEnabled="false"
-            app:layout_constraintStart_toStartOf="@+id/tituloPosts"
-            app:layout_constraintTop_toBottomOf="@+id/tituloPosts"
-            tools:listitem="@layout/item_post"/>
-        
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    
-</LinearLayout> -->

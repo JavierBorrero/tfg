@@ -1,4 +1,4 @@
-package com.example.tfg.utils;
+package com.example.tfg.utils.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;

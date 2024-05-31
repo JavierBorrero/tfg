@@ -1,16 +1,15 @@
-package com.example.tfg.utils;
+package com.example.tfg.utils.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.tfg.AllAnunciosFragment;
-import com.example.tfg.MisAnunciosFragment;
+import com.example.tfg.AllPostsFragment;
+import com.example.tfg.MyPostsFragment;
 
-public class AnunciosViewPagerAdapter extends FragmentStateAdapter {
+public class PostsViewPagerAdapter extends FragmentStateAdapter {
     
-    public AnunciosViewPagerAdapter(@NonNull Fragment fragment) {
+    public PostsViewPagerAdapter(@NonNull Fragment fragment) {
         super(fragment);
     }
 
@@ -18,9 +17,9 @@ public class AnunciosViewPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if(position == 0){
-            return new AllAnunciosFragment();
+            return new AllPostsFragment();
         }else{
-            return new MisAnunciosFragment();
+            return new MyPostsFragment();
         }
     }
 

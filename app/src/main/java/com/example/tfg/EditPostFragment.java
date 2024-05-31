@@ -20,14 +20,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentEditPostBinding;
-import com.example.tfg.utils.CustomOnCheckedChangeListener;
-import com.example.tfg.utils.CustomTextWatcher;
+import com.example.tfg.utils.textwatchers.CustomOnCheckedChangeListener;
+import com.example.tfg.utils.textwatchers.CustomTextWatcher;
 import com.example.tfg.utils.EnviarCorreos;
 import com.example.tfg.utils.ValidarFormularios;
 import com.google.android.gms.tasks.OnFailureListener;

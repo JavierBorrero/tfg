@@ -1,4 +1,4 @@
-package com.example.tfg.utils;
+package com.example.tfg.utils.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tfg.R;
 import com.example.tfg.models.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 

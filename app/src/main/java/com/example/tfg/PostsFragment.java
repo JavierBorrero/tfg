@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.tfg.databinding.FragmentPostsBinding;
-import com.example.tfg.utils.PostsViewPagerAdapter;
+import com.example.tfg.utils.adapters.PostsViewPagerAdapter;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class PostsFragment extends Fragment {
