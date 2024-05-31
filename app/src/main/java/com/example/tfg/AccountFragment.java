@@ -1,5 +1,7 @@
 package com.example.tfg;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,6 +21,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentAccountBinding;
 import com.example.tfg.models.Usuario;
+import com.example.tfg.utils.EliminarUsuario;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,6 +70,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         activity = (MainActivity) getActivity();
+
+        userId = auth.getCurrentUser().getUid();
         
         storageReference = FirebaseStorage.getInstance().getReference();
         
@@ -75,12 +80,10 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         binding.btnLogout.setOnClickListener(this);
         binding.btnMisActividades.setOnClickListener(this);
         binding.btnEditProfile.setOnClickListener(this);
+        binding.btnEliminarCuenta.setOnClickListener(this);
     }
     
     private void obtenerDatosUsuario(){
-        
-        userId = auth.getCurrentUser().getUid();
-
         DocumentReference docRef = db.collection("usuarios").document(userId);
 
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -115,6 +118,55 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         });*/
     }
     
+    private void mostrarPrimerPopupEliminar(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        
+        builder.setTitle("Eliminar Usuario");
+        builder.setMessage("Va a proceder a eliminar su usuario ¿Desea continuar?");
+        
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mostrarSegundoPopupEliminar();
+            }
+        });
+        
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    
+    private void mostrarSegundoPopupEliminar(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        
+        builder.setTitle("Eliminar Usuario");
+        builder.setMessage("Esta accion es irreversible ¿Esta seguro de que quiere continuar?");
+        
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                EliminarUsuario eliminarUsuario = new EliminarUsuario();
+                eliminarUsuario.eliminarUsuario(getContext(), userId);
+            }
+        });
+        
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    
     @Override
     public void onClick(View view) {
         int i = view.getId();
@@ -136,6 +188,10 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
             if(activity != null){
                 activity.goToFragment(new MisActividadesFragment(), R.id.misactividadesfragment);
             }
+        }
+        
+        if(i == R.id.btnEliminarCuenta){
+            mostrarPrimerPopupEliminar();
         }
     }
 }

@@ -103,6 +103,7 @@
         app:layout_constraintStart_toStartOf="@+id/btnEditProfile" />
     
     <Button
+        android:id="@+id/btnEliminarCuenta"
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
