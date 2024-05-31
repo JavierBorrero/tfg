@@ -18,11 +18,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentEditProfileBinding;
 import com.example.tfg.models.Usuario;
+import com.example.tfg.utils.textwatchers.CustomTextWatcher;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,7 +50,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     EditText nombre, apellidos, telefono;
     Uri image;
     ImageView imagen;
-    String userId;
+    String userId, nombreOriginal, apellidosOriginal;
+    int telefonoOriginal;
     
     Usuario usuario;
     
@@ -87,20 +90,58 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         userId = mAuth.getCurrentUser().getUid();
         activity = (MainActivity) getActivity(); 
         
-        
         nombre = binding.fieldNombre;
         apellidos = binding.fieldApellido;
         telefono = binding.fieldTelefono;
         imagen = binding.profilePic;
         
-        
         obtenerDatosUsuario(userId);
-        
         
         binding.btnAceptar.setOnClickListener(this);
         binding.btnCancelar.setOnClickListener(this);
         binding.btnEditPfp.setOnClickListener(this);
         
+        addTextWatchers();
+        checkForChanges();
+    }
+    
+    private void addTextWatchers(){
+        CustomTextWatcher textWatcher = new CustomTextWatcher(this::checkForChanges);
+        
+        binding.fieldNombre.addTextChangedListener(textWatcher);
+        binding.fieldApellido.addTextChangedListener(textWatcher);
+        binding.fieldTelefono.addTextChangedListener(textWatcher);
+    }
+    
+    private void checkForChanges(){
+        String currentNombre = binding.fieldNombre.getText().toString().trim();
+        String currentApellido = binding.fieldApellido.getText().toString().trim();
+        
+        String numeroTelefono = binding.fieldTelefono.getText().toString().trim();
+        int currentNumero = 0;
+        
+        if(!numeroTelefono.isEmpty()){
+            try{
+                currentNumero = Integer.parseInt(numeroTelefono);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        
+        boolean hasChanges = !currentNombre.equals(nombreOriginal) ||
+                !currentApellido.equals(apellidosOriginal) ||
+                currentNumero != telefonoOriginal ||
+                image != null;
+        
+        if(!hasChanges){
+            binding.btnAceptar.setEnabled(false);
+            int colorBackground = ContextCompat.getColor(getContext(), R.color.desactivado);
+            binding.btnAceptar.setBackgroundColor(colorBackground);
+        }else{
+            binding.btnAceptar.setEnabled(true);
+            int colorBackground = ContextCompat.getColor(getContext(), R.color.verde_boton);
+            binding.btnAceptar.setBackgroundColor(colorBackground);
+        }
     }
     
     // === OBTENER LOS DATOS DEL USUARIO ===
@@ -113,6 +154,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.exists()){
                     usuario = documentSnapshot.toObject(Usuario.class);
+                    
+                    nombreOriginal = usuario.getNombre();
+                    apellidosOriginal = usuario.getApellido();
+                    telefonoOriginal = usuario.getTelefono();
+                    
                     nombre.setText(usuario.getNombre());
                     apellidos.setText(usuario.getApellido());
                     telefono.setText(String.valueOf(usuario.getTelefono()));

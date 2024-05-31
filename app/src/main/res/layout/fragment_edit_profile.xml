@@ -90,7 +90,7 @@
         android:layout_marginBottom="70dp"
         android:layout_marginEnd="25dp"
         android:text="@string/boton_aceptar"
-        android:backgroundTint="@color/verde_boton"
+        android:backgroundTint="@color/desactivado"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
         
