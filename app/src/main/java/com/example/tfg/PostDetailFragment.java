@@ -118,10 +118,12 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         String currentUser = auth.getCurrentUser().getUid();
         if(currentUser.equals(postUserId)){
             binding.btnActividad.setVisibility(View.GONE);
+            binding.btnDescargarPdf.setVisibility(View.GONE);
             binding.btnEditarPost.setVisibility(View.VISIBLE);
             binding.btnBorrarPost.setVisibility(View.VISIBLE);
         }else{
             binding.btnActividad.setVisibility(View.VISIBLE);
+            binding.btnDescargarPdf.setVisibility(View.VISIBLE);
             binding.btnEditarPost.setVisibility(View.GONE);
             binding.btnBorrarPost.setVisibility(View.GONE);
         }
