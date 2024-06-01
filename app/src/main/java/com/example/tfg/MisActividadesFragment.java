@@ -82,6 +82,7 @@ public class MisActividadesFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             postsList.clear();
+                            Date today = new Date();
                             for(QueryDocumentSnapshot document : task.getResult()){
                                 String id = document.getId();
                                 String userId = document.getString("userId");
@@ -93,22 +94,24 @@ public class MisActividadesFragment extends Fragment {
                                 boolean material = document.getBoolean("materialNecesario");
                                 String imageUrl = document.getString("imageUrl");
 
-                                Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
+                                if(fecha != null && !fecha.before(today)){
+                                    Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
-                                db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
-                                    String nombreAutor = userDoc.getString("nombre");
-                                    String apellidoAutor = userDoc.getString("apellido");
-                                    post.setNombreAutor(nombreAutor);
-                                    post.setApellidoAutor(apellidoAutor);
-                                    postsList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-                                    
+                                    db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
+                                        String nombreAutor = userDoc.getString("nombre");
+                                        String apellidoAutor = userDoc.getString("apellido");
+                                        post.setNombreAutor(nombreAutor);
+                                        post.setApellidoAutor(apellidoAutor);
+                                        postsList.add(post);
+                                        postAdapter.notifyDataSetChanged();
+                                    });
+
                                     if(postsList.isEmpty()){
                                         noMostrarRecycler();
                                     }else{
                                         mostrarRecycler(postsList);
                                     }
-                                });
+                                }
                             }
                             Log.d("DEBUG", "POSTS LIST: " + postsList.size());
                         }
