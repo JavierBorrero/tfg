@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.tfg.databinding.FragmentSignUpBinding;
+import com.example.tfg.utils.ValidarFormularios;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +34,8 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
     FragmentSignUpBinding binding;
 
     EditText nombre, apellido, telefono, correo, contrasena, confirmarContrasena;
+    
+    private boolean isUploading = false;
     
 
     @Nullable
@@ -74,6 +77,8 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
         if(!validarCampos()){
             return;
         }
+        
+        binding.botonRegistro.setClickable(false);
 
         String cadenaNombre = nombre.getText().toString();
         String cadenaApellido = apellido.getText().toString();
@@ -95,119 +100,16 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
     }
 
     private boolean validarCampos(){
-        /*
-            Booleano para manejar la validacion.
-            Si algun campo esta mal este valor cambia a false y la validacion
-            no es correcta
-         */
-
-        boolean validar = true;
-
-        // Comprobar que el campo nombre no esta vacio
-        if(nombre.getText().toString().isEmpty()){
-            nombre.setError("Campo vacio");
-            validar = false;
-        }else{
-            nombre.setError(null);
-        }
-
-        // Comprobar que el campo apellido no esta vacio
-        if(apellido.getText().toString().isEmpty()){
-            apellido.setError("Campo vacio");
-            validar = false;
-        }else{
-            apellido.setError(null);
-        }
+        ValidarFormularios validarFormularios = new ValidarFormularios();
         
-        // Comprobar que el campo telefono no esta vacio
-        if(telefono.getText().toString().isEmpty()){
-            telefono.setError("Telefono vacio");
-            validar = false;
-        }else{
-            telefono.setError(null);
-        }
-
-        // Comprobar que el campo email no esta vacio
-        if(correo.getText().toString().isEmpty()){
-            correo.setError("Campo vacio");
-            validar = false;
-            // Si tiene contenido se valida
-        } else if (!validarEmail(correo.getText().toString())) {
-            correo.setError("Email no valido");
-            validar = false;
-        }else{
-            correo.setError(null);
-        }
-
-        // Comprobar que el campo contraseña no esta vacio
-        if(contrasena.getText().toString().isEmpty()){
-            contrasena.setError("Campo vacio");
-            validar = false;
-            // Si tiene contenido se valida
-        } else if (!validarPassword(contrasena.getText().toString())) {
-            contrasena.setError("Contraseña no valida");
-            validar = false;
-        }else{
-            contrasena.setError(null);
-        }
-
-        // Comprobar que el campo confirmar contraseña no este vacio
-        if(confirmarContrasena.getText().toString().isEmpty()){
-            confirmarContrasena.setError("Campo vacio");
-            validar = false;
-        }else if(!contrasena.getText().toString().equals(confirmarContrasena.getText().toString())){
-            confirmarContrasena.setError("Las contraseñas no coinciden");
-            validar = false;
-        }else{
-            confirmarContrasena.setError(null);
-        }
-
-        return validar;
-    }
-
-    /*
-        --- FUNCION VALIDAR EMAIL ---
-        
-        Esta funcion valida que el email tenga un formato correcto
-        La cadena para validar el email es una expresion regular de 
-        OWASP Validation Regex Repository
-     */
-    private static boolean validarEmail(String email){
-
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
-                "[a-zA-Z0-9_+&*-]+)*@" +
-                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
-                "A-Z]{2,7}$";
-
-        Pattern pat = Pattern.compile(emailRegex);
-
-        if(email == null){
-            return false;
-        }
-
-        return pat.matcher(email).matches();
-    }
-
-    /*
-        --- FUNCION VALIDAR PASSWORD ---
-        Esta funcion valida que la contraseña tenga un formato correcto
-        
-        Contraseña de 12 caracteres minimo que require:
-        - Letra mayuscula
-        - Letra minuscula
-        - Numeros
-        - Caracteres especiales
-     */
-    private static boolean validarPassword(String password){
-        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>._]).{12,}$";
-
-        Pattern pat = Pattern.compile(passwordRegex);
-
-        if(password == null){
-            return false;
-        }
-
-        return pat.matcher(password).matches();
+        return validarFormularios.validarRegistro(
+                nombre,
+                apellido,
+                telefono,
+                correo,
+                contrasena,
+                confirmarContrasena
+        );
     }
 
     private void writeNewUser(String nombre, String apellido, int telefono, String email){
@@ -240,14 +142,34 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
         activity.goToFragment(new PostsFragment(), R.id.postsfragment);
     }
 
+    private void disableButtonForDelay(long delayMillis){
+        binding.botonRegistro.setEnabled(false);
+        binding.botonRegistro.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.botonRegistro.setEnabled(true);
+                isUploading = false;
+            }
+        }, delayMillis);
+    }
+
 
     @Override
     public void onClick(View view) {
         int i = view.getId();
+        
         if(i == R.id.botonRegistro){
-            registro();
-        } else if (i == R.id.botonIrLogin) {
-            activity.goToFragment(new SignInFragment(), R.id.signinfragment);
+            if(!isUploading){
+                isUploading = true;
+                disableButtonForDelay(1000);
+                registro();    
+            }
+        }
+        
+        if(i == R.id.botonIrLogin){
+            if(activity != null){
+                activity.goToFragment(new SignInFragment(), R.id.signinfragment);
+            }
         }
     }
 

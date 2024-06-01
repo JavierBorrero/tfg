@@ -251,6 +251,9 @@ public class ValidarFormularios {
         if(emailTrim.isEmpty()){
             email.setError("Email vacio");
             validar = false;
+        }else if (!validarEmail(emailTrim)){
+            email.setError("Email no valido");
+            validar = false;
         }else {
             email.setError(null);
         }
@@ -260,6 +263,79 @@ public class ValidarFormularios {
             validar = false;
         }else {
             password.setError(null);
+        }
+        
+        return validar;
+    }
+    
+    public boolean validarRegistro(EditText nombre, EditText apellido, EditText telefono, EditText email, EditText contrasena, EditText confirmarContrasena){
+        boolean validar = true;
+        
+        String nombreTrim = nombre.getText().toString().trim();
+        String apellidoTrim = apellido.getText().toString().trim();
+        String telefonoTrim = telefono.getText().toString().trim();
+        String emailTrim = email.getText().toString().trim();
+        String contrasenaTrim = contrasena.getText().toString().trim();
+        String confirmarContrasenaTrim = confirmarContrasena.getText().toString().trim();
+        
+        if(nombreTrim.isEmpty()){
+            nombre.setError("Nombre vacio");
+            validar = false;
+        } else if (nombreTrim.length() < 2) {
+            nombre.setError("Nombre demasiado corto");
+            validar = false;
+        }else {
+            nombre.setError(null);
+        }
+        
+        if(apellidoTrim.isEmpty()){
+            apellido.setError("Apellido vacio");
+            validar = false;
+        } else if (apellidoTrim.length() < 2) {
+            apellido.setError("Apellido demasiado corto");
+            validar = false;
+        }else {
+            apellido.setError(null);
+        }
+        
+        if(telefonoTrim.isEmpty()){
+            telefono.setError("Telefono vacio");
+            validar = false;
+        } else if (telefonoTrim.length() != 9) {
+            telefono.setError("Formato incorrecto");
+            validar = false;
+        }else {
+            telefono.setError(null);
+        }
+        
+        if(emailTrim.isEmpty()){
+            email.setError("Email vacio");
+            validar = false;
+        } else if (!validarEmail(emailTrim)) {
+            email.setError("Email no valido");
+            validar = false;
+        }else {
+            email.setError(null);
+        }
+        
+        if(contrasenaTrim.isEmpty()){
+            contrasena.setError("Contraseña vacia");
+            validar = false;
+        } else if (!validarContrasena(contrasenaTrim)) {
+            contrasena.setError("Contraseña no valida");
+            validar = false;
+        }else {
+            contrasena.setError(null);
+        }
+        
+        if(confirmarContrasenaTrim.isEmpty()){
+            confirmarContrasena.setError("Confirmar contraseña vacio");
+            validar = false;
+        } else if (!confirmarContrasenaTrim.equals(contrasenaTrim)) {
+            confirmarContrasena.setError("Las contraseñas no coinciden");
+            validar = false;
+        }else {
+            confirmarContrasena.setError(null);
         }
         
         return validar;
@@ -278,5 +354,17 @@ public class ValidarFormularios {
         }
 
         return pat.matcher(email).matches();
+    }
+    
+    private boolean validarContrasena(String contrasena){
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>._]).{12,}$";
+
+        Pattern pat = Pattern.compile(passwordRegex);
+
+        if(contrasena == null){
+            return false;
+        }
+
+        return pat.matcher(contrasena).matches();
     }
 }

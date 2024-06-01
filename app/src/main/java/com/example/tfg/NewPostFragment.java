@@ -66,7 +66,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
     
     String userId;
     
-    private boolean isSearching = false;
+    private boolean isUploading = false;
 
     ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -263,7 +263,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
             @Override
             public void run() {
                 binding.btnSubmitPost.setEnabled(true);
-                isSearching = false;
+                isUploading = false;
             }
         }, delayMillis);
     }
@@ -273,8 +273,8 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         int i = view.getId();
 
         if(i == R.id.btnSubmitPost){
-            if(!isSearching){
-                isSearching = true;
+            if(!isUploading){
+                isUploading = true;
                 disableButtonForDelay(1000);
                 publicarPost();   
             }
