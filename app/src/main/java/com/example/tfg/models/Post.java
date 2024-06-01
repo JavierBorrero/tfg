@@ -10,6 +10,8 @@ public class Post {
     
     public String nombreAutor;
     
+    public String apellidoAutor;
+    
     public String titulo;
     
     public String descripcion;
@@ -60,6 +62,14 @@ public class Post {
 
     public void setNombreAutor(String nombreAutor) {
         this.nombreAutor = nombreAutor;
+    }
+
+    public String getApellidoAutor() {
+        return apellidoAutor;
+    }
+
+    public void setApellidoAutor(String apellidoAutor) {
+        this.apellidoAutor = apellidoAutor;
     }
 
     public String getTitulo() {

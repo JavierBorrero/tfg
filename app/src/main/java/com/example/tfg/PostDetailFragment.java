@@ -46,7 +46,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
     private UserAdapter userAdapter;
     private List<Usuario> userList;
     
-    String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, fechaFormateada, imageUrl, userIdAuth;
+    String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, apellidoAutor, fechaFormateada, imageUrl, userIdAuth;
     Date fecha;
     long fechaLong;
     int numeroPersonas;
@@ -108,6 +108,7 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
             numeroPersonas = getArguments().getInt("numeroPersonas");
             materialNecesario = getArguments().getBoolean("materialNecesario");
             nombreAutor = getArguments().getString("nombreAutor");
+            apellidoAutor = getArguments().getString("apellidoAutor");
             imageUrl = getArguments().getString("imageUrl");
             
             // Formatear la fecha
@@ -130,8 +131,8 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
         
         // Set los datos recuperados del Bundle
         binding.detailTitulo.setText(titulo);
-        binding.detailAutor.setText(nombreAutor);
-        binding.detailDescripcion.setText(descripcion);
+        binding.detailAutor.setText(String.format("%s %s", nombreAutor, apellidoAutor));
+        binding.detailDescripcion.setText(String.format("Descripcion: %s", descripcion));
         binding.detailFecha.setText(String.format("Fecha y hora: %s", fechaFormateada));
         binding.detailLocalizacion.setText(String.format("Localizacion: %s", localizacion));
         binding.detailNumeroPersonas.setText(String.format("Numero de personas: %s", String.valueOf(numeroPersonas)));

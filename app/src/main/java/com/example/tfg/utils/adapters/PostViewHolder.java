@@ -27,7 +27,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     }
     
     public void bind(Post post, FirebaseStorage storage, PostAdapter.OnItemClickListener listener){
-        autorNombre.setText(post.getNombreAutor());
+        autorNombre.setText(String.format("%s %s", post.getNombreAutor(), post.getApellidoAutor()));
         postTitulo.setText(post.getTitulo());
 
         StorageReference pfpRef = storage.getReference().child("images/" + post.getUserId() + "/pfp/");
