@@ -24,7 +24,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(Usuario usuario, UserAdapter.OnUserLongClickListener listener, UserAdapter.OnItemClickListener onItemClickListener) {
-        usuarioNombre.setText(usuario.getNombre());
+        usuarioNombre.setText(String.format("%s %s", usuario.getNombre(), usuario.getApellido()));
         String imagePfpUrl = usuario.getImagePfpUrl();
 
         if (imagePfpUrl != null && !imagePfpUrl.isEmpty()) {

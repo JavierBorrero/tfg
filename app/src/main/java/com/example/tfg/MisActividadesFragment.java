@@ -96,8 +96,10 @@ public class MisActividadesFragment extends Fragment {
                                 Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
                                 db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
-                                    String authorName = userDoc.getString("nombre");
-                                    post.setNombreAutor(authorName);
+                                    String nombreAutor = userDoc.getString("nombre");
+                                    String apellidoAutor = userDoc.getString("apellido");
+                                    post.setNombreAutor(nombreAutor);
+                                    post.setApellidoAutor(apellidoAutor);
                                     postsList.add(post);
                                     postAdapter.notifyDataSetChanged();
                                     
@@ -150,6 +152,7 @@ public class MisActividadesFragment extends Fragment {
         bundle.putInt("numeroPersonas", post.getNumeroPersonas());
         bundle.putBoolean("materialNecesario", post.isMaterial());
         bundle.putString("nombreAutor", post.getNombreAutor());
+        bundle.putString("apellidoAutor", post.getApellidoAutor());
         bundle.putString("imageUrl", post.getImageUrl());
 
         PostDetailFragment postDetailFragment = new PostDetailFragment();
