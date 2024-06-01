@@ -116,6 +116,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
         // Guardar los datos del usuario
         Map<String, Object> user = new HashMap<>();
         user.put("nombre", nombre);
+        user.put("nombre_min", nombre.toLowerCase());
         user.put("apellido", apellido);
         user.put("telefono", telefono);
         user.put("email", email);
