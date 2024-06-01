@@ -29,6 +29,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.tfg.databinding.FragmentNewPostBinding;
+import com.example.tfg.utils.ValidarFormularios;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
@@ -121,80 +122,16 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
 
     // === INICIO VALIDACION ===
     private boolean validarCampos(){
-        boolean validar = true;
-        
-        String tituloTrim = titulo.getText().toString().trim();
-        String descripcionTrim = descripcion.getText().toString().trim();
-        String localizacionTrim = localizacion.getText().toString().trim();
-        String personasTrim = personas.getText().toString().trim();
-        String cadenaFechaHora = fechaHora.getText().toString();
-        
 
-        // Comprobar que el campo titulo no esta vacio
-        if(tituloTrim.isEmpty()){
-            titulo.setError("Titulo vacio");
-            validar = false;
-        }else{
-            titulo.setError(null);
-        }
-
-        // Comprobar que el campo descripcion no esta vacio
-        if(descripcionTrim.isEmpty()){
-            descripcion.setError("Descripcion vacia");
-            validar = false;
-        }else{
-            descripcion.setError(null);
-        }
-
-        // Comprobar que el campo localizacion no esta vacio
-        if(localizacionTrim.isEmpty()){
-            localizacion.setError("Localizacion vacia");
-            validar = false;
-        }else{
-            localizacion.setError(null);
-        }
-        
-        // Comprobar que se selecciona una fecha y hora
-        if(cadenaFechaHora.isEmpty()){
-            fechaHora.setError("Fecha y hora vacias");
-            validar = false;
-        }else{
-            fechaHora.setError(null);
-        }
-
-        /*
-            Comprobar que el campo personas no esta vacio
-            Si no esta vacio comprobar que el numero es valido
-         */
-        if(personasTrim.isEmpty()){
-            personas.setError("Debe indicar un número de personas");
-            validar = false;
-        } else if (!validarNumeroPersonas()) {
-            validar = false;
-        }else{
-            personas.setError(null);
-        }
-
-        return validar;
+        ValidarFormularios validarFormularios = new ValidarFormularios();
+        return validarFormularios.validarNuevoPost(
+                titulo,
+                descripcion,
+                localizacion,
+                personas,
+                fechaHora
+        );
     }
-    
-    // Funcion para validar el numero de personas que se pueden apuntar a la actividad
-    private boolean validarNumeroPersonas(){
-        boolean validar = true;
-
-        int numeroPersonas = Integer.parseInt(personas.getText().toString());
-
-        if (numeroPersonas <= 0 || numeroPersonas > 10){
-            personas.setError("Número entre 1 y 10");
-            validar = false;
-        }else{
-            personas.setError(null);
-        }
-
-        return validar;
-    }
-    // === FIN VALIDACION ===
-    
     
     /*
         Funcion para obtener la fecha y la hora

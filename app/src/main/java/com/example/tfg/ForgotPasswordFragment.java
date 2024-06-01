@@ -56,7 +56,7 @@ public class ForgotPasswordFragment extends Fragment implements View.OnClickList
     private boolean validarCampos(){
         ValidarFormularios validarFormularios = new ValidarFormularios();
         
-        return validarFormularios.validarEmailRecuperarContraseña(
+        return validarFormularios.validarEmailRecuperarContrasena(
                 binding.inputCorreoRecuperar
         );
     }

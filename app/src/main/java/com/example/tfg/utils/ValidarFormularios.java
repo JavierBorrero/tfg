@@ -151,7 +151,7 @@ public class ValidarFormularios {
         return validar;
     }
     
-    public boolean validarEmailRecuperarContraseña(EditText correo){
+    public boolean validarEmailRecuperarContrasena(EditText correo){
         boolean validar = true;
         
         String correoTrim = correo.getText().toString().trim();
@@ -164,6 +164,79 @@ public class ValidarFormularios {
             validar = false;
         }else {
             correo.setError(null);
+        }
+        
+        return validar;
+    }
+    
+    public boolean validarNuevoPost(EditText titulo, EditText descripcion, EditText localizacion, EditText personas, EditText fechaHora){
+        boolean validar = true;
+        
+        String tituloTrim = titulo.getText().toString().trim();
+        String descripcionTrim = descripcion.getText().toString().trim();
+        String localizacionTrim = localizacion.getText().toString().trim();
+        String personasTrim = personas.getText().toString().trim();
+        String fechaHoraTrim = fechaHora.getText().toString().trim();
+        
+        if(tituloTrim.isEmpty()){
+            titulo.setError("Titulo vacio");
+            validar = false;
+        } else if (tituloTrim.length() < 20) {
+            titulo.setError("Titulo demasiado corto");
+            validar = false;
+        }else {
+            titulo.setError(null);
+        }
+        
+        if(descripcionTrim.isEmpty()){
+            descripcion.setError("Descripcion vacia");
+            validar = false;
+        } else if (descripcionTrim.length() < 40) {
+            descripcion.setError("Descripcion demasiado corta");
+            validar = false;
+        }else {
+            descripcion.setError(null);
+        }
+        
+        if(localizacionTrim.isEmpty()){
+            localizacion.setError("Localizacion vacia");
+            validar = false;
+        } else if (localizacionTrim.length() < 20) {
+            localizacion.setError("Localizacion demasiado corta");
+            validar = false;
+        }else {
+            localizacion.setError(null);
+        }
+        
+        if(fechaHoraTrim.isEmpty()){
+            fechaHora.setError("Fecha y hora no seleccionada");
+            validar = false;
+        }else {
+            fechaHora.setError(null);
+        }
+        
+        if(personasTrim.isEmpty()){
+            personas.setError("Debe indicar un numero de personas");
+            validar = false;
+        } else if (!validarNumeroPersonasNewPost(personas)) {
+            validar = false;
+        }else {
+            personas.setError(null);
+        }
+
+        return validar;
+    }
+    
+    private boolean validarNumeroPersonasNewPost(EditText personas){
+        boolean validar = true;
+        
+        int numeroPersonas = Integer.parseInt(personas.getText().toString());
+        
+        if(numeroPersonas <= 0 || numeroPersonas > 10){
+            personas.setError("Numero entre 1 y 10");
+            validar = false;
+        }else {
+            personas.setError(null);
         }
         
         return validar;
