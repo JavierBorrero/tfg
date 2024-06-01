@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.tfg.databinding.FragmentForgotPasswordBinding;
+import com.example.tfg.utils.ValidarFormularios;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +26,7 @@ public class ForgotPasswordFragment extends Fragment implements View.OnClickList
     EditText inputCorreo;
     MainActivity activity;
     
+    private boolean isUploading = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,11 +52,21 @@ public class ForgotPasswordFragment extends Fragment implements View.OnClickList
         inputCorreo = binding.inputCorreoRecuperar;
         
     }
+
+    private boolean validarCampos(){
+        ValidarFormularios validarFormularios = new ValidarFormularios();
+        
+        return validarFormularios.validarEmailRecuperarContraseña(
+                binding.inputCorreoRecuperar
+        );
+    }
     
     private void recuperarContrasena(){
         if(!validarCampos()){
             return;
         }
+        
+        binding.btnConfirmar.setClickable(false);
         
         email = inputCorreo.getText().toString().trim();
         
@@ -67,30 +79,37 @@ public class ForgotPasswordFragment extends Fragment implements View.OnClickList
             }
         });
     }
-    
-    private boolean validarCampos(){
-        boolean validar = true;
-        
-        if(inputCorreo.getText().toString().trim().isEmpty()){
-            inputCorreo.setError("Email vacio");
-            validar = false;
-        }else{
-            inputCorreo.setError(null);
-        }
-        
-        return validar;
+
+    private void disableButtonForDelay(long delayMillis){
+        binding.btnConfirmar.setEnabled(false);
+        binding.btnConfirmar.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.btnConfirmar.setEnabled(true);
+                isUploading = false;
+            }
+        }, delayMillis);
     }
 
     @Override
     public void onClick(View view) {
         int i = view.getId();
+        
         if(i == R.id.btnConfirmar){
-            recuperarContrasena();
-        } else if (i == R.id.volverSignIn) {
+            if(!isUploading){
+                isUploading = true;
+                disableButtonForDelay(1000);
+                recuperarContrasena();
+            }
+        }
+        
+        if(i == R.id.volverSignIn){
             if(activity != null){
                 activity.goToFragment(new SignInFragment(), R.id.signinfragment);
             }
-        } else if (i == R.id.volverSignUp) {
+        }
+        
+        if(i == R.id.volverSignUp){
             if(activity != null){
                 activity.goToFragment(new SignUpFragment(), R.id.signupfragment);
             }

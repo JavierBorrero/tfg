@@ -56,6 +56,7 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     
     Usuario usuario;
     
+    boolean isUploading = false;
 
     private final ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -203,6 +204,8 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             return;
         }
         
+        binding.btnAceptar.setClickable(false);
+        
         String cadenaNombre = nombre.getText().toString().trim();
         String cadenaApellido = apellidos.getText().toString().trim();
         int numTelefono = Integer.parseInt(telefono.getText().toString().trim());
@@ -271,6 +274,17 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             });
         }
     }
+
+    private void disableButtonForDelay(long delayMillis){
+        binding.btnAceptar.setEnabled(false);
+        binding.btnAceptar.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.btnAceptar.setEnabled(true);
+                isUploading = false;
+            }
+        }, delayMillis);
+    }
     
     @Override
     public void onClick(View view) {
@@ -287,8 +301,11 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
         }
         
         if(i == R.id.btnAceptar){
-            aplicarCambios();
+            if(!isUploading){
+                isUploading = true;
+                disableButtonForDelay(1000);
+                aplicarCambios();
+            }
         }
-        
     }
 }

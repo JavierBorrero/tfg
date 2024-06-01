@@ -2,6 +2,8 @@ package com.example.tfg.utils;
 
 import android.widget.EditText;
 
+import java.util.regex.Pattern;
+
 public class ValidarFormularios {
     
     public boolean validarEditarPost(EditText titulo, EditText descripcion, EditText localizacion, EditText fechaHora, EditText numeroPersonas, int usuariosRegistrados){
@@ -147,5 +149,38 @@ public class ValidarFormularios {
         }
 
         return validar;
+    }
+    
+    public boolean validarEmailRecuperarContraseña(EditText correo){
+        boolean validar = true;
+        
+        String correoTrim = correo.getText().toString().trim();
+        
+        if(correoTrim.isEmpty()){
+            correo.setError("Email vacio");
+            validar = false;
+        } else if (!validarEmail(correoTrim)) {
+            correo.setError("Email no valido");
+            validar = false;
+        }else {
+            correo.setError(null);
+        }
+        
+        return validar;
+    }
+    
+    private boolean validarEmail(String email){
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+
+        if(email == null){
+            return false;
+        }
+
+        return pat.matcher(email).matches();
     }
 }
