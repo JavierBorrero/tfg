@@ -12,7 +12,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.tfg.databinding.FragmentAnuncioDetailBinding;
+import com.example.tfg.utils.EnviarCorreos;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AnuncioDetailFragment extends Fragment implements View.OnClickListener {
@@ -22,7 +28,7 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
     FirebaseFirestore db;
     MainActivity activity;
     
-    String anuncioId, anuncioUserId, userId, titulo, descripcion, nombreAutor;
+    String anuncioId, anuncioUserId, userId, titulo, descripcion, nombreAutor, emailUsuarioAnuncio;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,7 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
         }
         
         userId = auth.getCurrentUser().getUid();
+        
         if(userId.equals(anuncioUserId)){
             binding.btnContactar.setVisibility(View.GONE);
             binding.btnEditarAnuncio.setVisibility(View.VISIBLE);
@@ -76,6 +83,30 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
         binding.btnContactar.setOnClickListener(this);
         binding.btnEditarAnuncio.setOnClickListener(this);
         binding.btnEliminarAnuncio.setOnClickListener(this);
+        
+        obtenerEmailUsuarioAnuncio(anuncioUserId);
+    }
+    
+    private void obtenerEmailUsuarioAnuncio(String anuncioUserId){
+        db.collection("usuarios").document(anuncioUserId)
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            emailUsuarioAnuncio = documentSnapshot.getString("email");
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    
+    private void contactarUsuarioPorAnuncio(){
+        EnviarCorreos enviarCorreos = new EnviarCorreos();
+        enviarCorreos.enviarCorreoContactarUsuarioAnuncio(getContext(), userId, emailUsuarioAnuncio, titulo);
     }
     
     private void openEditAnuncio(){
@@ -102,7 +133,7 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
         }
         
         if(i == R.id.btnContactar){
-            Toast.makeText(getContext(), "Boton contactar", Toast.LENGTH_SHORT).show();
+            contactarUsuarioPorAnuncio();
         }
         
         if(i == R.id.btnEliminarAnuncio){

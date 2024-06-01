@@ -280,7 +280,45 @@ public class EnviarCorreos {
         });
     }
     
-    
+    public void enviarCorreoContactarUsuarioAnuncio(Context context, String userId, String emailUsuario, String tituloAnuncio){
+        DocumentReference userRef = db.collection("usuarios").document(userId);
+        
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        nombre = document.getString("nombre");
+                        apellidos = document.getString("apellido");
+
+                        Map<String, Object> emailMessage = new HashMap<>();
+                        emailMessage.put("subject", nombre + " " + apellidos + " se esta poniendo en contacto contigo");
+                        emailMessage.put("text", nombre + " " + apellidos + " ha visto tu anuncio: " + tituloAnuncio + "\n\n" +
+                                "Entra en la aplicacion y mira sus actividades te interesan." + "\n\n\n" +
+                                "DAM TFG JAVIER BORRERO DEL CERRO");
+
+                        Map<String, Object> emailData = new HashMap<>();
+                        emailData.put("to", emailUsuario);
+                        emailData.put("message", emailMessage);
+
+                        db.collection("mail").document()
+                                .set(emailData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        mostrarPopupMensaje(context, "Se ha enviado un mensaje al dueño del anuncio para ponerse en contacto contigo");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            }
+        });
+    }
     
     public void mostrarPopupMensaje(Context context, String mensaje){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
