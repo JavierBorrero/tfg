@@ -122,8 +122,8 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
 
     // === INICIO VALIDACION ===
     private boolean validarCampos(){
-
         ValidarFormularios validarFormularios = new ValidarFormularios();
+        
         return validarFormularios.validarNuevoPost(
                 titulo,
                 descripcion,

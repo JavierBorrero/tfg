@@ -242,6 +242,29 @@ public class ValidarFormularios {
         return validar;
     }
     
+    public boolean validarInicioSesion(EditText email, EditText password){
+        boolean validar = true;
+        
+        String emailTrim = email.getText().toString().trim();
+        String passwordTrim = password.getText().toString().trim();
+        
+        if(emailTrim.isEmpty()){
+            email.setError("Email vacio");
+            validar = false;
+        }else {
+            email.setError(null);
+        }
+        
+        if(passwordTrim.isEmpty()){
+            password.setError("Contraseña vacia");
+            validar = false;
+        }else {
+            password.setError(null);
+        }
+        
+        return validar;
+    }
+    
     private boolean validarEmail(String email){
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
                 "[a-zA-Z0-9_+&*-]+)*@" +

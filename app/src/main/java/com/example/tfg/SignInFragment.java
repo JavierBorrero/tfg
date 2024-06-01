@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.tfg.databinding.FragmentSignInBinding;
+import com.example.tfg.utils.ValidarFormularios;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -80,23 +81,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
     // --- Funcion para validar los campos del log in ---
     private boolean validarCampos(){
-        boolean validar = true;
-
-        if(email.getText().toString().isEmpty()){
-            email.setError("Required");
-            validar = false;
-        }else{
-            email.setError(null);
-        }
-
-        if(password.getText().toString().isEmpty()){
-            password.setError("Required");
-            validar = false;
-        }else{
-            password.setError(null);
-        }
-
-        return validar;
+        ValidarFormularios validarFormularios = new ValidarFormularios();
+        
+        return validarFormularios.validarInicioSesion(
+                email, 
+                password
+        );
     }
 
     private void onAuthSuccess(FirebaseUser user){
@@ -104,18 +94,22 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
             activity.goToFragment(new PostsFragment(), R.id.postsfragment);
         }
     }
-
-
+    
     @Override
     public void onClick(View view) {
         int i = view.getId();
+        
         if(i == R.id.btnInicioSesion){
             inicioSesion();
-        }else if (i == R.id.btnIrRegistro){
+        }
+        
+        if(i == R.id.btnIrRegistro){
             if(activity != null){
                 activity.goToFragment(new SignUpFragment(), R.id.signupfragment);
             }
-        }else if(i == R.id.recuperarContrasena){
+        }
+        
+        if(i == R.id.recuperarContrasena){
             if(activity != null){
                 activity.goToFragment(new ForgotPasswordFragment(), R.id.forgotpasswordfragment);
             }
