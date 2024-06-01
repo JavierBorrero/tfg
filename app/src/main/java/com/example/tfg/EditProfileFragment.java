@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.tfg.databinding.FragmentEditProfileBinding;
 import com.example.tfg.models.Usuario;
+import com.example.tfg.utils.ValidarFormularios;
 import com.example.tfg.utils.textwatchers.CustomTextWatcher;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -188,31 +189,13 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
     
     // === VALIDAR CAMPOS ===
     private boolean validarCampos(){
-        boolean validar = true;
-
-        // Validar si el campo nombre esta vacio
-        if(nombre.getText().toString().isEmpty()){
-            nombre.setError("Nombre vacio");
-            validar = false;
-        }else{
-            nombre.setError(null);
-        }
-
-        if(apellidos.getText().toString().isEmpty()){
-            apellidos.setError("Apellido vacio");
-            validar = false;
-        }else{
-            apellidos.setError(null);
-        }
-
-        if(telefono.getText().toString().isEmpty()){
-            telefono.setError("Telefono vacio");
-            validar = false;
-        }else{
-            telefono.setError(null);
-        }
-
-        return validar;
+        ValidarFormularios validarFormularios = new ValidarFormularios();
+        
+        return validarFormularios.validarEditarPerfil(
+                binding.fieldNombre,
+                binding.fieldApellido,
+                binding.fieldTelefono
+        );
     }
     
     private void aplicarCambios(){
@@ -220,9 +203,9 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
             return;
         }
         
-        String cadenaNombre = nombre.getText().toString();
-        String cadenaApellido = apellidos.getText().toString();
-        int numTelefono = Integer.parseInt(telefono.getText().toString());
+        String cadenaNombre = nombre.getText().toString().trim();
+        String cadenaApellido = apellidos.getText().toString().trim();
+        int numTelefono = Integer.parseInt(telefono.getText().toString().trim());
         
         if(image != null){
             editarConFotoPerfil(userId, cadenaNombre, cadenaApellido, numTelefono, image);
@@ -286,8 +269,6 @@ public class EditProfileFragment extends Fragment implements View.OnClickListene
                     Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-        }else{
-            
         }
     }
     

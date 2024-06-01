@@ -108,4 +108,44 @@ public class ValidarFormularios {
         
         return validar;
     }
+    
+    public boolean validarEditarPerfil(EditText nombre, EditText apellidos, EditText numeroTelefono){
+        boolean validar = true;
+        
+        String nombreTrim = nombre.getText().toString().trim();
+        String apellidosTrim = apellidos.getText().toString().trim();
+        String telefonoTrim = numeroTelefono.getText().toString().trim();
+        
+        if(nombreTrim.isEmpty()){
+            nombre.setError("Nombre vacio");
+            validar = false;
+        } else if (nombreTrim.length() < 5) {
+            nombre.setError("Nombre demasiado corto");
+            validar = false;
+        }else {
+            nombre.setError(null);
+        }
+        
+        if(apellidosTrim.isEmpty()){
+            apellidos.setError("Apellidos vacio");
+            validar = false;
+        } else if (apellidosTrim.length() < 5) {
+            apellidos.setError("Apellido demasiado corto");
+            validar = false;
+        }else {
+            apellidos.setError(null);
+        }
+        
+        if(telefonoTrim.isEmpty()){
+            numeroTelefono.setError("Telefono vacio");
+            validar = false;
+        } else if (telefonoTrim.length() != 9) {
+            numeroTelefono.setError("Formato incorrecto");
+            validar = false;
+        }else {
+            numeroTelefono.setError(null);
+        }
+
+        return validar;
+    }
 }
