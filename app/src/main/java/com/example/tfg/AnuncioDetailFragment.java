@@ -1,5 +1,7 @@
 package com.example.tfg;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -109,6 +111,42 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
         enviarCorreos.enviarCorreoContactarUsuarioAnuncio(getContext(), userId, emailUsuarioAnuncio, titulo);
     }
     
+    private void eliminarAnuncio(String anuncioId){
+        db.collection("anuncios").document(anuncioId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        if(activity != null){
+                            activity.goToFragment(new AnunciosFragment(), R.id.anunciosfragment);
+                        }
+                        mostrarPopupEliminarAnuncio();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    
+    private void mostrarPopupEliminarAnuncio(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle("Anuncio eliminado");
+        builder.setMessage("Se ha eliminado su anuncio");
+
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    
     private void openEditAnuncio(){
         Bundle bundle = new Bundle();
         bundle.putString("id", anuncioId);
@@ -137,7 +175,7 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
         }
         
         if(i == R.id.btnEliminarAnuncio){
-            Toast.makeText(getContext(), "Boton eliminar", Toast.LENGTH_SHORT).show();
+            eliminarAnuncio(anuncioId);
         }
     }
 }
