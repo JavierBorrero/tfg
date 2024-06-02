@@ -350,6 +350,8 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
         bundle.putString("userId", anuncio.getUserId());
         bundle.putString("titulo", anuncio.getTitulo());
         bundle.putString("descripcion", anuncio.getDescripcion());
+        bundle.putString("nombreAutor", anuncio.getNombreAutor());
+        bundle.putString("apellidoAutor", anuncio.getApellidoAutor());
 
         AnuncioDetailFragment anuncioDetailFragment = new AnuncioDetailFragment();
         anuncioDetailFragment.setArguments(bundle);
