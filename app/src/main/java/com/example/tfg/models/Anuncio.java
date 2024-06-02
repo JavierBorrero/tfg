@@ -7,6 +7,7 @@ public class Anuncio {
     public String titulo;
     public String descripcion;
     public String nombreAutor;
+    public String apellidoAutor;
     
     public Anuncio(String id, String userId, String titulo, String descripcion){
         this.id = id;
@@ -53,5 +54,13 @@ public class Anuncio {
 
     public void setNombreAutor(String nombreAutor) {
         this.nombreAutor = nombreAutor;
+    }
+
+    public String getApellidoAutor() {
+        return apellidoAutor;
+    }
+
+    public void setApellidoAutor(String apellidoAutor) {
+        this.apellidoAutor = apellidoAutor;
     }
 }

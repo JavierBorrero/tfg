@@ -94,6 +94,11 @@ public class EnviarCorreos {
                     public void onComplete(@NonNull Task<Void> task) {
                         mostrarPopupMensaje(context, "Se le ha apuntado a la actividad y se ha enviado un mensaje al propietario de este anuncio");
                     }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
     
@@ -113,6 +118,11 @@ public class EnviarCorreos {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         mostrarPopupMensaje(context, "Se le ha elimado de la actividad y se ha enviado un mensaje al propietario de este anuncio");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

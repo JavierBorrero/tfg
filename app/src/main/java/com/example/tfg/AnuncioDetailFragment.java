@@ -30,7 +30,7 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
     FirebaseFirestore db;
     MainActivity activity;
     
-    String anuncioId, anuncioUserId, userId, titulo, descripcion, nombreAutor, emailUsuarioAnuncio;
+    String anuncioId, anuncioUserId, userId, titulo, descripcion, nombreAutor, apellidoAutor, emailUsuarioAnuncio;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
             titulo = getArguments().getString("titulo");
             descripcion = getArguments().getString("descripcion");
             nombreAutor = getArguments().getString("nombreAutor");
+            apellidoAutor = getArguments().getString("apellidoAutor");
         }
         
         userId = auth.getCurrentUser().getUid();
@@ -79,7 +80,7 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
         }
         
         binding.detailTitulo.setText(titulo);
-        binding.detailAutor.setText(nombreAutor);
+        binding.detailAutor.setText(String.format("%s %s", nombreAutor, apellidoAutor));
         binding.detailDescripcion.setText(descripcion);
         
         binding.btnContactar.setOnClickListener(this);

@@ -121,7 +121,7 @@ public class ValidarFormularios {
         if(nombreTrim.isEmpty()){
             nombre.setError("Nombre vacio");
             validar = false;
-        } else if (nombreTrim.length() < 5) {
+        } else if (nombreTrim.length() < 2) {
             nombre.setError("Nombre demasiado corto");
             validar = false;
         }else {
@@ -131,7 +131,7 @@ public class ValidarFormularios {
         if(apellidosTrim.isEmpty()){
             apellidos.setError("Apellidos vacio");
             validar = false;
-        } else if (apellidosTrim.length() < 5) {
+        } else if (apellidosTrim.length() < 3) {
             apellidos.setError("Apellido demasiado corto");
             validar = false;
         }else {
@@ -191,7 +191,7 @@ public class ValidarFormularios {
         if(descripcionTrim.isEmpty()){
             descripcion.setError("Descripcion vacia");
             validar = false;
-        } else if (descripcionTrim.length() < 40) {
+        } else if (descripcionTrim.length() < 50) {
             descripcion.setError("Descripcion demasiado corta");
             validar = false;
         }else {
@@ -291,7 +291,7 @@ public class ValidarFormularios {
         if(apellidoTrim.isEmpty()){
             apellido.setError("Apellido vacio");
             validar = false;
-        } else if (apellidoTrim.length() < 2) {
+        } else if (apellidoTrim.length() < 3) {
             apellido.setError("Apellido demasiado corto");
             validar = false;
         }else {

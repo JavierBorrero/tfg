@@ -31,13 +31,13 @@ import java.util.List;
 
 public class MisActividadesFragment extends Fragment {
     
-    FragmentMisActividadesBinding binding;
-    MainActivity activity;
-    FirebaseAuth auth;
-    FirebaseFirestore db;
-    PostAdapter postAdapter;
-    List<Post> postsList = new ArrayList<>();
-    FirebaseStorage storage;
+    private FragmentMisActividadesBinding binding;
+    private MainActivity activity;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private PostAdapter postAdapter;
+    private List<Post> postsList = new ArrayList<>();
+    private FirebaseStorage storage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,15 +105,8 @@ public class MisActividadesFragment extends Fragment {
                                         postsList.add(post);
                                         postAdapter.notifyDataSetChanged();
                                     });
-
-                                    if(postsList.isEmpty()){
-                                        noMostrarRecycler();
-                                    }else{
-                                        mostrarRecycler(postsList);
-                                    }
                                 }
                             }
-                            Log.d("DEBUG", "POSTS LIST: " + postsList.size());
                         }
                     }
                 })
@@ -123,25 +116,6 @@ public class MisActividadesFragment extends Fragment {
                         Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-    
-    private void noMostrarRecycler(){
-        binding.tituloNingunaActividad.setVisibility(View.VISIBLE);
-        binding.recyclerMisActividades.setVisibility(View.GONE);
-    }
-    
-    private void mostrarRecycler(List<Post> postsList){
-        binding.tituloNingunaActividad.setVisibility(View.GONE);
-        binding.recyclerMisActividades.setVisibility(View.VISIBLE);
-        
-        binding.recyclerMisActividades.setLayoutManager(new LinearLayoutManager(getContext()));
-        postAdapter = new PostAdapter(postsList, storage, new PostAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Post post) {
-                openPostDetail(post);
-            }
-        });
-        binding.recyclerMisActividades.setAdapter(postAdapter);
     }
 
     private void openPostDetail(Post post){

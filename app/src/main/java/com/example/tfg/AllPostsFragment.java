@@ -10,11 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.tfg.databinding.FragmentAllPostsBinding;
 import com.example.tfg.models.Post;
 import com.example.tfg.utils.adapters.PostAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -23,7 +26,9 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AllPostsFragment extends Fragment implements View.OnClickListener {
     
@@ -65,6 +70,7 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
         binding.recyclerView.setAdapter(postAdapter);
 
         binding.btnNewPost.setOnClickListener(this);
+        binding.btnTest.setOnClickListener(this);
         
         postsFromFirebase();
     }
@@ -106,6 +112,26 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
         });
     }
     
+    private void intentoUpdatePostUsuarioDistinto(){
+        String titulo = "nuevo titulo de Post";
+        Map<String, Object> postUpdate = new HashMap<>();
+        postUpdate.put("titulo", titulo);
+        
+        db.collection("posts").document("CUHoxPBHQ48Gw6MV4h9h")
+                .update(postUpdate)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(getContext(), "Correcto", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    
     private void openPostDetail(Post post){
         Bundle bundle = new Bundle();
         bundle.putString("id", post.getId());
@@ -135,6 +161,10 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
             if(activity != null){
                 activity.goToFragment(new NewPostFragment(), R.id.newpostfragment);    
             }
+        }
+        
+        if(i == R.id.btnTest){
+            intentoUpdatePostUsuarioDistinto();
         }
     }
 }

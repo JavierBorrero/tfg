@@ -199,6 +199,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
     
     private void datosPost(String usuarioId, String titulo, String descripcion, String localizacion, int personas, boolean material, @Nullable String imageUrl){
         Map<String, Object> post = new HashMap<>();
+        Map<String, Object> usuariosRegistrados = new HashMap<>();
         post.put("userId", usuarioId);
         post.put("titulo", titulo);
         post.put("descripcion", descripcion);
@@ -206,6 +207,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         post.put("numeroPersonas", personas);
         post.put("materialNecesario", material);
         post.put("fecha", firebaseTimeStamp);
+        post.put("usuariosRegistrados", usuariosRegistrados);
         
         if(imageUrl != null){
             post.put("imageUrl", imageUrl);

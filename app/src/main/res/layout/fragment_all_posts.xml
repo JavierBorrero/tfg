@@ -22,4 +22,13 @@
         android:layout_marginBottom="18dp"
         android:src="@drawable/icon_create" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="18dp"
+        android:src="@drawable/icon_create" />
+
 </FrameLayout>

@@ -35,6 +35,7 @@ public class MisAnunciosFragment extends Fragment {
     FirebaseAuth auth;
     AnuncioAdapter anuncioAdapter;
     List<Anuncio> anunciosList;
+    private MainActivity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,11 +55,13 @@ public class MisAnunciosFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
+        activity = (MainActivity) getActivity(); 
+        
         anunciosList = new ArrayList<>();
         anuncioAdapter = new AnuncioAdapter(anunciosList, storage, new AnuncioAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Anuncio anuncio) {
-                
+                openAnuncioDetail(anuncio);
             }
         });
         
@@ -90,7 +93,9 @@ public class MisAnunciosFragment extends Fragment {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         String nombreAutor = documentSnapshot.getString("nombre");
+                                        String apellidoAutor = documentSnapshot.getString("apellido");
                                         anuncio.setNombreAutor(nombreAutor);
+                                        anuncio.setApellidoAutor(apellidoAutor);
                                         anunciosList.add(anuncio);
                                         anuncioAdapter.notifyDataSetChanged();
                                     }
@@ -99,5 +104,22 @@ public class MisAnunciosFragment extends Fragment {
                         }
                     }
                 });
+    }
+    
+    private void openAnuncioDetail(Anuncio anuncio){
+        Bundle bundle = new Bundle();
+        bundle.putString("id", anuncio.getId());
+        bundle.putString("userId", anuncio.getUserId());
+        bundle.putString("titulo", anuncio.getTitulo());
+        bundle.putString("descripcion", anuncio.getDescripcion());
+        bundle.putString("nombreAutor", anuncio.getNombreAutor());
+        bundle.putString("apellidoAutor", anuncio.getApellidoAutor());
+
+        AnuncioDetailFragment anuncioDetailFragment = new AnuncioDetailFragment();
+        anuncioDetailFragment.setArguments(bundle);
+
+        if(activity != null){
+            activity.goToFragment(anuncioDetailFragment, R.id.anunciodetailfragment);
+        }
     }
 }

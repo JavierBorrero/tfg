@@ -41,23 +41,23 @@ import java.util.Locale;
 import java.util.Map;
 
 public class PostDetailFragment extends Fragment implements View.OnClickListener, UserAdapter.OnUserLongClickListener, UserAdapter.OnItemClickListener {
-    
-    FragmentPostDetailBinding binding;
+
+    private FragmentPostDetailBinding binding;
     private UserAdapter userAdapter;
     private List<Usuario> userList;
-    
-    String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, apellidoAutor, fechaFormateada, imageUrl, userIdAuth;
-    Date fecha;
-    long fechaLong;
-    int numeroPersonas;
-    boolean materialNecesario, estaRegistrado;
-    Map<String, Object> usuariosRegistrados;
 
-    FirebaseAuth auth;
-    FirebaseFirestore db;
-    MainActivity activity;
+    private String postId, userId, postUserId, titulo, descripcion, localizacion, nombreAutor, apellidoAutor, fechaFormateada, imageUrl, userIdAuth;
+    private Date fecha;
+    private long fechaLong;
+    private int numeroPersonas;
+    private boolean materialNecesario, estaRegistrado;
+    private Map<String, Object> usuariosRegistrados;
 
-    EnviarCorreos enviarCorreos;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private MainActivity activity;
+
+    private EnviarCorreos enviarCorreos;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -207,7 +207,10 @@ public class PostDetailFragment extends Fragment implements View.OnClickListener
             binding.btnActividad.setText("Eliminarse");
             estaRegistrado = true;
         }
-        
+
+        if(activity != null){
+            activity.goToFragment(new PostsFragment(), R.id.postsfragment);
+        }
     }
     
     private void infoUsuarioRecycler(String userId){

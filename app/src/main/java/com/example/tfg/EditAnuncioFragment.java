@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.tfg.databinding.FragmentEditAnuncioBinding;
 import com.example.tfg.utils.ValidarFormularios;
+import com.example.tfg.utils.textwatchers.CustomTextWatcher;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -65,6 +66,25 @@ public class EditAnuncioFragment extends Fragment implements View.OnClickListene
         binding.editDescripcion.setText(descripcion);
         
         binding.btnConfirmEdit.setOnClickListener(this);
+        
+        addTextWatchers();
+        checkForChanges();
+    }
+    
+    private void addTextWatchers(){
+        CustomTextWatcher textWatcher = new CustomTextWatcher(this::checkForChanges);
+        
+        binding.editTitulo.addTextChangedListener(textWatcher);
+        binding.editDescripcion.addTextChangedListener(textWatcher);
+    }
+    
+    private void checkForChanges(){
+        String currentTitulo = binding.editTitulo.getText().toString().trim();
+        String currentDescripcion = binding.editDescripcion.getText().toString().trim();
+        
+        boolean hasChanges = !currentTitulo.equals(titulo) || !currentDescripcion.equals(descripcion);
+        
+        binding.btnConfirmEdit.setEnabled(hasChanges);
     }
     
     private boolean validarCampos(){

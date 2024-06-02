@@ -121,6 +121,7 @@ public class MyPostsFragment extends Fragment {
         bundle.putInt("numeroPersonas", post.getNumeroPersonas());
         bundle.putBoolean("materialNecesario", post.isMaterial());
         bundle.putString("nombreAutor", post.getNombreAutor());
+        bundle.putString("apellidoAutor", post.getApellidoAutor());
         bundle.putString("imageUrl", post.getImageUrl());
 
         PostDetailFragment postDetailFragment = new PostDetailFragment();

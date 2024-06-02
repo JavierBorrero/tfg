@@ -18,14 +18,18 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.tfg.databinding.FragmentSearchBinding;
+import com.example.tfg.models.Anuncio;
 import com.example.tfg.models.Post;
 import com.example.tfg.models.Usuario;
+import com.example.tfg.utils.adapters.AnuncioAdapter;
 import com.example.tfg.utils.adapters.UserAdapter;
 import com.example.tfg.utils.adapters.PostAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -46,8 +50,10 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
     private FirebaseAuth auth;
     private List<Post> postList;
     private List<Usuario> userList;
+    private List<Anuncio> anuncioList;
     private UserAdapter userAdapter;
     private PostAdapter postAdapter;
+    private AnuncioAdapter anuncioAdapter;
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable busquedaRunnable;
     private String userIdAuth;
@@ -73,6 +79,7 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
         activity = (MainActivity) getActivity(); 
         userList = new ArrayList<>();
         postList = new ArrayList<>();
+        anuncioList = new ArrayList<>();
         
         userIdAuth = auth.getCurrentUser().getUid();
         
@@ -90,6 +97,16 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
             }
         });
         binding.recyclerPosts.setAdapter(postAdapter);
+        
+        // Anuncios Recycler
+        binding.recyclerAnuncios.setLayoutManager(new LinearLayoutManager(getContext()));
+        anuncioAdapter = new AnuncioAdapter(anuncioList, storage, new AnuncioAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Anuncio anuncio) {
+                openAnuncioDetail(anuncio);
+            }
+        });
+        binding.recyclerAnuncios.setAdapter(anuncioAdapter);
         
         binding.buscador.addTextChangedListener(new TextWatcher() {
             @Override
@@ -142,6 +159,7 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                             }
                             userAdapter.notifyDataSetChanged();
                             obtenerPostsDeUsuarios(usersIds);
+                            obtenerAnunciosDeUsuarios(usersIds);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -155,6 +173,8 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
         binding.viewTituloUsuarios.setVisibility(userList.isEmpty() ? View.VISIBLE : View.GONE);
         binding.tituloPosts.setVisibility(postList.isEmpty() ? View.VISIBLE : View.GONE);
         binding.viewTituloPosts.setVisibility(postList.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tituloAnuncios.setVisibility(anuncioList.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.viewTituloAnuncios.setVisibility(anuncioList.isEmpty() ? View.VISIBLE : View.GONE);
     }
     
     private void obtenerPostsDeUsuarios(List<String> usersIds){
@@ -204,6 +224,45 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
         }
     }
     
+    private void obtenerAnunciosDeUsuarios(List<String> usersIds){
+        for(String userId : usersIds){
+            db.collection("anuncios")
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                anuncioList.clear();
+                                for(QueryDocumentSnapshot document : task.getResult()){
+                                    String id = document.getId();
+                                    String userId = document.getString("userId");
+                                    String titulo = document.getString("titulo");
+                                    String descripcion = document.getString("descripcion");
+
+                                    Anuncio anuncio = new Anuncio(id, userId, titulo, descripcion);
+
+                                    db.collection("usuarios").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            String nombreAutor = documentSnapshot.getString("nombre");
+                                            anuncio.setNombreAutor(nombreAutor);
+                                            anuncioList.add(anuncio);
+                                            anuncioAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+    
     private void openUserDetail(Usuario usuario){
         if(usuario.getId().equals(userIdAuth)){
             if(activity != null){
@@ -244,6 +303,21 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
 
         if(activity != null){
             activity.goToFragment(postDetailFragment, R.id.postdetailfragment);
+        }
+    }
+    
+    private void openAnuncioDetail(Anuncio anuncio){
+        Bundle bundle = new Bundle();
+        bundle.putString("id", anuncio.getId());
+        bundle.putString("userId", anuncio.getUserId());
+        bundle.putString("titulo", anuncio.getTitulo());
+        bundle.putString("descripcion", anuncio.getDescripcion());
+
+        AnuncioDetailFragment anuncioDetailFragment = new AnuncioDetailFragment();
+        anuncioDetailFragment.setArguments(bundle);
+
+        if(activity != null){
+            activity.goToFragment(anuncioDetailFragment, R.id.anunciodetailfragment);
         }
     }
 

@@ -58,6 +58,7 @@
     <string name="hint_buscador">Buscar…</string>
     <string name="buscador_personas">Personas</string>
     <string name="buscador_posts">Posts</string>
+    <string name="buscador_anuncios">Anuncios</string>
 
     <!-- === STRINGS POST DETAIL === -->
     <string name="post_detail_titulo">Titulo</string>

@@ -89,7 +89,9 @@ public class AllAnunciosFragment extends Fragment implements View.OnClickListene
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 String nombreAutor = documentSnapshot.getString("nombre");
+                                String apellidoAutor = documentSnapshot.getString("apellido");
                                 anuncio.setNombreAutor(nombreAutor);
+                                anuncio.setApellidoAutor(apellidoAutor);
                                 anunciosList.add(anuncio);
                                 anuncioAdapter.notifyDataSetChanged();
                             }
@@ -106,6 +108,8 @@ public class AllAnunciosFragment extends Fragment implements View.OnClickListene
         bundle.putString("userId", anuncio.getUserId());
         bundle.putString("titulo", anuncio.getTitulo());
         bundle.putString("descripcion", anuncio.getDescripcion());
+        bundle.putString("nombreAutor", anuncio.getNombreAutor());
+        bundle.putString("apellidoAutor", anuncio.getApellidoAutor());
         
         AnuncioDetailFragment anuncioDetailFragment = new AnuncioDetailFragment();
         anuncioDetailFragment.setArguments(bundle);

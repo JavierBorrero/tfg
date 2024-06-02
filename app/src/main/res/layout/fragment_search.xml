@@ -94,6 +94,42 @@
             app:layout_constraintStart_toStartOf="@+id/tituloPosts"
             app:layout_constraintTop_toBottomOf="@+id/tituloPosts"
             tools:listitem="@layout/item_post"/>
+        
+        <TextView
+            android:id="@+id/tituloAnuncios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/buscador_anuncios"
+            android:textSize="24sp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerPosts"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <View
+            android:id="@+id/viewTituloAnuncios"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:visibility="gone"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@+id/tituloAnuncios"
+            app:layout_constraintStart_toStartOf="@+id/tituloAnuncios"
+            app:layout_constraintEnd_toEndOf="@+id/tituloAnuncios"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerAnuncios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintStart_toStartOf="@+id/tituloAnuncios"
+            app:layout_constraintTop_toBottomOf="@+id/tituloAnuncios"
+            tools:listitem="@layout/item_post"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     
