@@ -27,6 +27,11 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class SignUpFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener {
+
+    /*
+        === SIGN UP FRAGMENT ===
+        Esta clase se encarga del registro de nuevos usuarios
+     */
     
     FirebaseAuth mAuth;
     FirebaseFirestore db;
@@ -48,10 +53,13 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Instancias
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         activity = (MainActivity) getActivity(); 
-        
+
+        // onClicks
         binding.botonRegistro.setOnClickListener(this);
         binding.botonIrLogin.setOnClickListener(this);
         binding.fieldContrasena.setOnFocusChangeListener(this);
@@ -68,30 +76,37 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
     public void onStart(){
         super.onStart();
 
+        // Se comprueba si el usuario ya esta logeado y se le pasa a la siguiente pantalla
         if (mAuth.getCurrentUser() != null) {
-            onAuthSuccess(mAuth.getCurrentUser());
+            onAuthSuccess();
         }
     }
 
+    // Metodo para registrar a usuarios
     private void registro(){
+        // Si la validacion falla no se hace nada
         if(!validarCampos()){
             return;
         }
-        
+
+        // Se desactiva el boton para evitar doble click
         binding.botonRegistro.setClickable(false);
 
+        // Se guardan los datos en variables
         String cadenaNombre = nombre.getText().toString();
         String cadenaApellido = apellido.getText().toString();
         int numTelefono = Integer.parseInt(telefono.getText().toString());
         String cadenaCorreo = correo.getText().toString();
         String cadenaContrasena = contrasena.getText().toString();
 
+        // Se crea el usuario en FirebaseAuth
         mAuth.createUserWithEmailAndPassword(cadenaCorreo, cadenaContrasena).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
+                    // Si sale bien se crea el documento del usuario
                     writeNewUser(cadenaNombre, cadenaApellido, numTelefono, cadenaCorreo);
-                    onAuthSuccess(task.getResult().getUser());
+                    onAuthSuccess();
                 }else{
                     Toast.makeText(getContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -99,7 +114,9 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
         });
     }
 
+    // Metodo para validar los campos
     private boolean validarCampos(){
+        // Objeto ValidarFormularios y llamada al metodo
         ValidarFormularios validarFormularios = new ValidarFormularios();
         
         return validarFormularios.validarRegistro(
@@ -112,6 +129,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
         );
     }
 
+    // Metodo para crear el documento del nuevo usuario
     private void writeNewUser(String nombre, String apellido, int telefono, String email){
         // Guardar los datos del usuario
         Map<String, Object> user = new HashMap<>();
@@ -122,7 +140,8 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
         user.put("email", email);
         
         String userId = mAuth.getCurrentUser().getUid();
-        
+
+        // Se escribe el documento
         db.collection("usuarios").document(userId)
                 .set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -139,10 +158,12 @@ public class SignUpFragment extends Fragment implements View.OnClickListener, Vi
                 });
     }
 
-    private void onAuthSuccess(FirebaseUser user){
+    // Metodo para pasar a la siguiente pantalla
+    private void onAuthSuccess(){
         activity.goToFragment(new PostsFragment(), R.id.postsfragment);
     }
 
+    // Metodo para desactivar el boton para evitar dobleClick
     private void disableButtonForDelay(long delayMillis){
         binding.botonRegistro.setEnabled(false);
         binding.botonRegistro.postDelayed(new Runnable() {

@@ -77,6 +77,7 @@
     <string name="text_info_correo">Introduzca su correo electronico y le enviaremos un mensaje para restablecer su contraseña</string>
     <string name="confirmar">Confirmar</string>
     <string name="correo_enviado">Le hemos enviado un correo para restablecer su contraseña</string>
+    <string name="text_info_password">Le recomendamos que siga usando un formato de contraseña segura para evitar problemas de seguridad</string>
     <string name="volver_signin">Volver al inicio de sesion</string>
     <string name="volver_signup">Voler al registro</string>
 

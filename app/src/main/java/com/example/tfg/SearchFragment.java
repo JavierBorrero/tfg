@@ -42,6 +42,12 @@ import java.util.List;
 import java.util.Set;
 
 public class SearchFragment extends Fragment implements UserAdapter.OnItemClickListener {
+
+    /*
+        === SEARCH FRAGMENT ===
+        Esta clase se encarga de buscar entre usuarios, posts y anuncios
+        Busca segun el nombre del usuario
+     */
     
     FragmentSearchBinding binding;
     private MainActivity activity;
@@ -72,15 +78,19 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Instancias
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
-        activity = (MainActivity) getActivity(); 
+        activity = (MainActivity) getActivity();
+
+        // Listas vacias
         userList = new ArrayList<>();
         postList = new ArrayList<>();
         anuncioList = new ArrayList<>();
-        
+
+        // UserId en variable
         userIdAuth = auth.getCurrentUser().getUid();
         
         // Personas Recycler
@@ -107,7 +117,8 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
             }
         });
         binding.recyclerAnuncios.setAdapter(anuncioAdapter);
-        
+
+        // TextWatcher para que solo busque cuando se hayan escrito al menos 3 letras
         binding.buscador.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -135,11 +146,13 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
             }
         });
     }
-    
+
+    // Metodo que realiza la busqueda
     private void realizarBusqueda(String textBusqueda){
         String nombreBusqueda = textBusqueda.toLowerCase();
         String finalNombreBusqueda = nombreBusqueda + "\uf8ff";
-        
+
+        // Busqueda en la coleccion de usuarios
         db.collection("usuarios")
                 .whereGreaterThanOrEqualTo("nombre_min", nombreBusqueda)
                 .whereLessThanOrEqualTo("nombre_min", finalNombreBusqueda)
@@ -149,15 +162,19 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             userList.clear();
+                            // Lista de ids de usuarios
                             List<String> usersIds = new ArrayList<>();
                             for(QueryDocumentSnapshot document : task.getResult()){
                                 String userId = document.getId();
                                 Usuario usuario = document.toObject(Usuario.class);
                                 usuario.setId(userId);
+                                // Se añaden los usuarios a la lista
                                 userList.add(usuario);
+                                // Se añaden los ids de los usuarios a la lista
                                 usersIds.add(userId);
                             }
                             userAdapter.notifyDataSetChanged();
+                            // Se busca en los posts y en los anuncios de los usuarios segun el userId
                             obtenerPostsDeUsuarios(usersIds);
                             obtenerAnunciosDeUsuarios(usersIds);
                         }
@@ -168,7 +185,8 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                         Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-        
+
+        // Se muestran segun la lista
         binding.tituloUsuarios.setVisibility(userList.isEmpty() ? View.VISIBLE : View.GONE);
         binding.viewTituloUsuarios.setVisibility(userList.isEmpty() ? View.VISIBLE : View.GONE);
         binding.tituloPosts.setVisibility(postList.isEmpty() ? View.VISIBLE : View.GONE);
@@ -176,8 +194,10 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
         binding.tituloAnuncios.setVisibility(anuncioList.isEmpty() ? View.VISIBLE : View.GONE);
         binding.viewTituloAnuncios.setVisibility(anuncioList.isEmpty() ? View.VISIBLE : View.GONE);
     }
-    
+
+    // Metodo para obtener los posts del usuario
     private void obtenerPostsDeUsuarios(List<String> usersIds){
+        // Se obtienen los posts por cada id
         for(String userId : usersIds){
             db.collection("posts")
                     .whereEqualTo("userId", userId)
@@ -187,6 +207,7 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if(task.isSuccessful()){
                                 postList.clear();
+                                // Se guarda le fecha de hoy para controlar si se muestra el post
                                 Date today = new Date();
                                 for(QueryDocumentSnapshot document : task.getResult()){
                                     String id = document.getId();
@@ -203,11 +224,14 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                                         Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
                                         db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
+                                            // Se añaden datos extras sobre el post
                                             String nombreAutor = userDoc.getString("nombre");
                                             String apellidoAutor = userDoc.getString("apellido");
                                             post.setNombreAutor(nombreAutor);
                                             post.setApellidoAutor(apellidoAutor);
+                                            // Se añade el post a la lista
                                             postList.add(post);
+                                            // Se notifica al adapter para cambiar el recyler
                                             postAdapter.notifyDataSetChanged();
                                         });
                                     }
@@ -223,8 +247,10 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                     });
         }
     }
-    
+
+    // Metodo para obtener los anuncios del usuario
     private void obtenerAnunciosDeUsuarios(List<String> usersIds){
+        // Se obtiene los usuarios por cada id
         for(String userId : usersIds){
             db.collection("anuncios")
                     .whereEqualTo("userId", userId)
@@ -245,9 +271,14 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                                     db.collection("usuarios").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            // Se añade informacion extra sobre el autor
                                             String nombreAutor = documentSnapshot.getString("nombre");
+                                            String apellidoAutor = documentSnapshot.getString("apellido");
                                             anuncio.setNombreAutor(nombreAutor);
+                                            anuncio.setApellidoAutor(apellidoAutor);
+                                            // Se añade el anuncio a la lista
                                             anuncioList.add(anuncio);
+                                            // Se notifica al adapter para cambiar el recycler
                                             anuncioAdapter.notifyDataSetChanged();
                                         }
                                     });
@@ -262,13 +293,16 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
                     });
         }
     }
-    
+
+    // Metodo para abrir los detalles del usuario
     private void openUserDetail(Usuario usuario){
+        // Si es igual al usuario registrado se va a la pantalla account
         if(usuario.getId().equals(userIdAuth)){
             if(activity != null){
                 activity.goToFragment(new AccountFragment(), R.id.accountfragment);
             }
         }else{
+            // Se crea un Bundle y se pasan los datos a la siguiente pantalla
             Bundle bundle = new Bundle();
             bundle.putString("nombre", usuario.getNombre());
             bundle.putString("apellido", usuario.getApellido());
@@ -284,8 +318,10 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
             }
         }
     }
-    
+
+    // Metodo para abrir los detalles del post
     private void openPostDetail(Post post){
+        // Se crea un Bundle para pasar los datos a la siguiente pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", post.getId());
         bundle.putString("userId", post.getUserId());
@@ -305,8 +341,10 @@ public class SearchFragment extends Fragment implements UserAdapter.OnItemClickL
             activity.goToFragment(postDetailFragment, R.id.postdetailfragment);
         }
     }
-    
+
+    // Metodo para abrir los datos del anuncio
     private void openAnuncioDetail(Anuncio anuncio){
+        // Se crea un Bundle para pasar los datos a la siguiente pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", anuncio.getId());
         bundle.putString("userId", anuncio.getUserId());

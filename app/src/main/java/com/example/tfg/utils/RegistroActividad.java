@@ -20,7 +20,6 @@ import java.util.Map;
 public class RegistroActividad {
     
     private FirebaseFirestore db;
-    private String keyToRemove;
     
     public RegistroActividad(){
         db = FirebaseFirestore.getInstance();
@@ -28,7 +27,25 @@ public class RegistroActividad {
     
     
     public void registrarUsuarioActividad(Context context, String postId, String userId){
+        // Referencia al documento posts para añadir el id del usuarioRegistrado
         DocumentReference postRef = db.collection("posts").document(postId);
+
+        postRef.update("usuariosRegistrados." + userId, true)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(context, "Usuario Apuntado", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        /*DocumentReference postRef = db.collection("posts").document(postId);
 
         postRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -57,10 +74,11 @@ public class RegistroActividad {
                     }
                 }
             }
-        });
+        });*/
     }
     
     public void eliminarUsuarioActividad(Context context, String postId, String userId){
+        // Referencia al documento posts para eliminar el id del usuarioRegistrado
         DocumentReference postRef = db.collection("posts").document(postId);
         
         postRef.update("usuariosRegistrados." + userId, FieldValue.delete())
@@ -69,8 +87,6 @@ public class RegistroActividad {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
                                     Toast.makeText(context, "Eliminado de la actividad", Toast.LENGTH_SHORT).show();
-                                }else{
-                                    Toast.makeText(context, "Error al eliminar de la actividad", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }).addOnFailureListener(new OnFailureListener() {

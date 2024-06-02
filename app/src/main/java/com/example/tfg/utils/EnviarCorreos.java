@@ -20,13 +20,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EnviarCorreos {
-    
-    String emailPostUser;
-    String nombre;
-    String apellidos;
-    String nombreAutor;
-    String apellidoAutor;
-    FirebaseFirestore db;
+
+    /*
+        === ENVIAR CORREOS ===
+        Esta clase se encarga de escribir documentos en la coleccion mail para notificar al resto de usuarios
+     */
+
+    private String emailPostUser;
+    private String nombre;
+    private String apellidos;
+    private String nombreAutor;
+    private String apellidoAutor;
+    private FirebaseFirestore db;
     
     public EnviarCorreos(){
         db = FirebaseFirestore.getInstance();
@@ -38,7 +43,7 @@ public class EnviarCorreos {
         - El usuario se elimina de la actividad
      */
     public void enviarEmailUsuarioActividad(Context context, String postUserId, String userId, String tituloActividad, boolean flag){
-        
+        // Referencia al documento del userId para obtener datos
         DocumentReference userPostRef = db.collection("usuarios").document(postUserId);
         
         // Se obtiene el email del dueño del post y otros datos para completar el correo
@@ -58,9 +63,11 @@ public class EnviarCorreos {
                                 if(task.isSuccessful()){
                                     DocumentSnapshot document = task.getResult();
                                     if(document.exists()){
+                                        // Se guardan los datos en las variables
                                         nombre = document.getString("nombre");
                                         apellidos = document.getString("apellido");
-                                        
+
+                                        // Dependiendo de la flag, si se apunta o se elimina de la activida
                                         if(flag){
                                             enviarCorreoApuntarActividad(context, tituloActividad);    
                                         }else{
@@ -78,12 +85,18 @@ public class EnviarCorreos {
     }
     
     private void enviarCorreoApuntarActividad(Context context, String tituloActividad){
+        // Se crea el mapa con el mensaje del email
         Map<String, Object> emailMessage = new HashMap<>();
         emailMessage.put("subject", nombre + " " + apellidos + " se ha apuntado a tu actividad");
         emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " se ha apuntado a tu actividad: " + tituloActividad + "\n" + 
                 "Entra en la aplicacion y contacta con el!" + "\n\n" +
                 "DAM TFG JAVIER BORRERO DEL CERRO");
 
+        /*
+            Se crean los datos del email
+            - A quien va dirigido el email
+            - Se añade el mapa del mensaje del email
+         */
         Map<String, Object> emailData = new HashMap<>();
         emailData.put("to", emailPostUser);
         emailData.put("message", emailMessage);
@@ -103,12 +116,18 @@ public class EnviarCorreos {
     }
     
     private void enviarCorreoEliminarActividad(Context context, String tituloActividad){
+        // Se crea el mapa con el mensaje del email
         Map<String, Object> emailMessage = new HashMap<>();
         emailMessage.put("subject", nombre + " " + apellidos + " se ha eliminado de tu actividad");
         emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " se ha eliminado de tu actividad: " + tituloActividad + "\n" +
                 "Entra en la aplicacion y contacta con el!" + "\n\n" +
                 "DAM TFG JAVIER BORRERO DEL CERRO");
 
+        /*
+            Se crean los datos del email
+            - A quien va dirigido el email
+            - Se añade el mapa del mensaje del email
+         */
         Map<String, Object> emailData = new HashMap<>();
         emailData.put("to", emailPostUser);
         emailData.put("message", emailMessage);
@@ -129,6 +148,7 @@ public class EnviarCorreos {
     
     // Se envia un correo cuando el autor elimina a un usuario
     public void enviarCorreoAutorEliminaUsuario(Context context, String postUserId, String emailUsuario, String tituloActividad){
+        // Referencia al documento del usuario autor para obtener los datos
         DocumentReference userRef = db.collection("usuarios").document(postUserId);
         
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -137,19 +157,26 @@ public class EnviarCorreos {
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
                     if(document.exists()){
+                        // Se guardan los datos en variables
                         nombreAutor = document.getString("nombre");
                         apellidoAutor = document.getString("apellido");
                     }
                 }
             }
         });
-        
+
+        // Se crea el mapa con el mensaje del email
         Map<String, Object> emailMessage = new HashMap<>();
         emailMessage.put("subject", nombreAutor + " " + apellidoAutor + " te ha eliminado de su actividad");
         emailMessage.put("text", "El usuario " + nombreAutor + " " + apellidoAutor + " te ha eliminado de su actividad: " + tituloActividad + "\n" + 
                 "Entra en la aplicacion y contacta con el para descubrir el porque" + "\n\n" + 
                 "DAM TFG JAVIER BORRERO DEL CERRO");
-        
+
+        /*
+            Se crean los datos del email
+            - A quien va dirigido el email
+            - Se añade el mapa del mensaje del email
+         */
         Map<String, Object> emailData = new HashMap<>();
         emailData.put("to", emailUsuario);
         emailData.put("message", emailMessage);
@@ -170,6 +197,7 @@ public class EnviarCorreos {
     
     // Se envia un correo al contactar con otro usuario
     public void enviarCorreoContactarOtroUsuario(Context context, String userId, String emailUsuario){
+        // Referencia al documento del usuario para obtener los datos
         DocumentReference userRef = db.collection("usuarios").document(userId);
         
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -178,15 +206,22 @@ public class EnviarCorreos {
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
                     if(document.exists()){
+                        // Se guardan los datos en variables
                         nombre = document.getString("nombre");
                         apellidos = document.getString("apellido");
 
+                        // Se crea el mapa con el mensaje del email
                         Map<String, Object> emailMessage = new HashMap<>();
                         emailMessage.put("subject", nombre + " " + apellidos + " esta intentando contactar contigo");
                         emailMessage.put("text", "El usuario " + nombre + " " + apellidos + " esta intentando contactar contigo en la aplicacion." + "\n\n" +
                                 "Entra en la aplicacion y ponte en contacto con el" + "\n\n\n" +
                                 "DAM TFG JAVIER BORRERO DEL CERRO");
-        
+
+                        /*
+                            Se crean los datos del email
+                            - A quien va dirigido el email
+                            - Se añade el mapa del mensaje del email
+                        */
                         Map<String, Object> emailData = new HashMap<>();
                         emailData.put("to", emailUsuario);
                         emailData.put("message", emailMessage);
@@ -211,6 +246,7 @@ public class EnviarCorreos {
     
     // Enviar email a los usuarios cuando se actualize una actividad
     public void enviarCorreoEditarPost(Context context, String userId, String emailUsuario, String tituloActividad){
+        // Referencia al documento del usuario para obtener los datos
         DocumentReference userRef = db.collection("usuarios").document(userId);
         
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -219,15 +255,22 @@ public class EnviarCorreos {
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
                     if(document.exists()){
+                        // Se guardan los datos en variables
                         nombre = document.getString("nombre");
                         apellidos = document.getString("apellido");
-                        
+
+                        // Se crea el mapa con el mensaje del email
                         Map<String, Object> emailMessage = new HashMap<>();
                         emailMessage.put("subject", "Se han realizado cambios en la actividad: " + tituloActividad);
                         emailMessage.put("text", nombre + " " + apellidos + " ha realizado cambios en la actividad: " + tituloActividad + "\n\n" +
                                 "Entra en la aplicacion y descubre los nuevos cambios." + "\n\n\n" +
                                 "DAM TFG JAVIER BORRERO DEL CERRO");
-                        
+
+                        /*
+                            Se crean los datos del email
+                            - A quien va dirigido el email
+                            - Se añade el mapa del mensaje del email
+                        */
                         Map<String, Object> emailData = new HashMap<>();
                         emailData.put("to", emailUsuario);
                         emailData.put("message", emailMessage);
@@ -251,6 +294,7 @@ public class EnviarCorreos {
     }
     
     public void enviarCorreoEliminarPost(Context context, String userId, String emailUsuario, String tituloActividad){
+        // Referencia al documento del usuario para obtener los datos
         DocumentReference userRef = db.collection("usuarios").document(userId);
         
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -259,15 +303,22 @@ public class EnviarCorreos {
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
                     if(document.exists()){
+                        // Se guardan los datos en variables
                         nombre = document.getString("nombre");
                         apellidos = document.getString("apellido");
 
+                        // Se crea el mapa con el mensaje del email
                         Map<String, Object> emailMessage = new HashMap<>();
                         emailMessage.put("subject", "Se ha eliminado la actividad: " + tituloActividad);
                         emailMessage.put("text", nombre + " " + apellidos + " ha eliminado la actividad: " + tituloActividad + "\n\n" +
                                 "Entra en la aplicacion y ponte en contacto con el para saber el porque." + "\n\n\n" +
                                 "DAM TFG JAVIER BORRERO DEL CERRO");
 
+                        /*
+                            Se crean los datos del email
+                            - A quien va dirigido el email
+                            - Se añade el mapa del mensaje del email
+                        */
                         Map<String, Object> emailData = new HashMap<>();
                         emailData.put("to", emailUsuario);
                         emailData.put("message", emailMessage);
@@ -291,6 +342,7 @@ public class EnviarCorreos {
     }
     
     public void enviarCorreoContactarUsuarioAnuncio(Context context, String userId, String emailUsuario, String tituloAnuncio){
+        // Referencia al documento del usuario para obtener los datos
         DocumentReference userRef = db.collection("usuarios").document(userId);
         
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -299,15 +351,22 @@ public class EnviarCorreos {
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
                     if(document.exists()){
+                        // Se guardan los datos en variables
                         nombre = document.getString("nombre");
                         apellidos = document.getString("apellido");
 
+                        // Se crea el mapa con el mensaje del email
                         Map<String, Object> emailMessage = new HashMap<>();
                         emailMessage.put("subject", nombre + " " + apellidos + " se esta poniendo en contacto contigo");
                         emailMessage.put("text", nombre + " " + apellidos + " ha visto tu anuncio: " + tituloAnuncio + "\n\n" +
                                 "Entra en la aplicacion y mira sus actividades te interesan." + "\n\n\n" +
                                 "DAM TFG JAVIER BORRERO DEL CERRO");
 
+                        /*
+                            Se crean los datos del email
+                            - A quien va dirigido el email
+                            - Se añade el mapa del mensaje del email
+                        */
                         Map<String, Object> emailData = new HashMap<>();
                         emailData.put("to", emailUsuario);
                         emailData.put("message", emailMessage);

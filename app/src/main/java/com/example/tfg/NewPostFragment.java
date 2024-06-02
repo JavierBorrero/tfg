@@ -48,6 +48,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NewPostFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === NEW POST FRAGMENT ===
+        Esta clase se encarga de crear nuevos posts
+     */
     
     FirebaseAuth auth;
     FirebaseFirestore db;
@@ -68,12 +73,14 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
     
     private boolean isUploading = false;
 
+    // Esto se encarga de recoger la foto junto con el Intent
     ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if(result.getResultCode() == Activity.RESULT_OK){
                         if(result.getData() != null){
+                            // Se guardan los datos y se muestra la foto previa
                             image = result.getData().getData();
                             fotoPrevia.setImageURI(image);
                         }
@@ -96,19 +103,22 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Instancias
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
-        userId = auth.getCurrentUser().getUid();
-        activity = (MainActivity) getActivity(); 
-        
+        activity = (MainActivity) getActivity();
 
+        // Se guarda el userId en una variable
+        userId = auth.getCurrentUser().getUid();
+
+        // onClicks
         binding.btnSubmitPost.setOnClickListener(this);
         binding.fieldFechaHora.setOnClickListener(this);
         binding.fieldImagen.setOnClickListener(this);
         
-
+        // Binding en variables para falicitar la legibilidad
         titulo = binding.fieldTitulo;
         descripcion = binding.fieldDescripcion;
         localizacion = binding.fieldLocalizacion;
@@ -120,8 +130,9 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    // === INICIO VALIDACION ===
+    // Metodo para validar los campos del nuevo post
     private boolean validarCampos(){
+        // Objeto de la clase ValidarFormularios y llamada al metodo
         ValidarFormularios validarFormularios = new ValidarFormularios();
         
         return validarFormularios.validarNuevoPost(
@@ -145,7 +156,11 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         int mDay = c.get(Calendar.DAY_OF_MONTH);
         int mHour = c.get(Calendar.HOUR_OF_DAY);
         int mMinute = c.get(Calendar.MINUTE);
-        
+
+        /*
+            Se muestra un DatePickerDialog y luego un TimePicker dialog
+            Para guardar la fecha y la hora
+         */
         DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
@@ -165,30 +180,39 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
                 timePickerDialog.show();
             }
         }, mYear, mMonth, mDay);
-        
+        // Se pone una fecha minima para evitar que se suban anuncios con fecha anterior a la de hoy
         datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
         datePickerDialog.show();
         
     }
 
+    // Intent para obtener la imagen
     private void lanzarIntentObtenerImagen(){
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryActivityResultLauncher.launch(intent);
     }
-    
+
+    // Metodo para publicar el post
     private void publicarPost(){
+        // Si la validacion falla no se hace nada
         if(!validarCampos()){
             return;
         }
-        
+
+        // Se desactiva el boton para evitar el doble click
         binding.btnSubmitPost.setClickable(false);
 
+        // Se guardan los datos en variables
         String cadenaTitulo = titulo.getText().toString().trim();
         String cadenaDescripcion = descripcion.getText().toString().trim();
         String cadenaLocalizacion = localizacion.getText().toString().trim();
         int numPersonas = Integer.parseInt(personas.getText().toString());
         boolean materialNecesario = material.isChecked();
-        
+
+        /*
+            Si viene imagen se guarda la imagen y luego se sube el post
+            Si no se sube directamente el post
+         */
         if(image != null){
             datosPostImagen(userId, cadenaTitulo, cadenaDescripcion, cadenaLocalizacion, numPersonas, materialNecesario, image);
         }else{
@@ -196,7 +220,8 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         }
         
     }
-    
+
+    // Metodo para subir el post
     private void datosPost(String usuarioId, String titulo, String descripcion, String localizacion, int personas, boolean material, @Nullable String imageUrl){
         Map<String, Object> post = new HashMap<>();
         Map<String, Object> usuariosRegistrados = new HashMap<>();
@@ -208,11 +233,13 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         post.put("materialNecesario", material);
         post.put("fecha", firebaseTimeStamp);
         post.put("usuariosRegistrados", usuariosRegistrados);
-        
+
+        // Si viene imagen se añade
         if(imageUrl != null){
             post.put("imageUrl", imageUrl);
         }
 
+        // Se sube el post
         db.collection("posts").document()
                 .set(post)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -229,16 +256,20 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
                 });
     }
 
+    // Se sube la imagen
     private void datosPostImagen(String usuarioId, String titulo, String descripcion, String localizacion, int personas, boolean material, @Nullable Uri file){
         if(file != null){
             StorageReference reference = storageReference.child("images/"+userId+"/user_posts/"+file.getLastPathSegment());
             reference.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // Se coge la url de la imagen
                     reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            // Se guarda la url en una variable
                             String imageUrl = uri.toString();
+                            // Se llama al metodo para subir el post
                             datosPost(usuarioId, titulo, descripcion, localizacion, personas, material, imageUrl);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -259,6 +290,7 @@ public class NewPostFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    // Metodo para desactivar el boton para evitar el doble click
     private void disableButtonForDelay(long delayMillis){
         binding.btnSubmitPost.setEnabled(false);
         binding.btnSubmitPost.postDelayed(new Runnable() {

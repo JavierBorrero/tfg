@@ -25,14 +25,19 @@ import java.util.Map;
 
 
 public class EditAnuncioFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === EDIT ANUNCIO FRAGMENT ===
+        Esta clase se encarga de editar los datos del anuncio
+     */
     
     FragmentEditAnuncioBinding binding;
     MainActivity activity;
     FirebaseAuth auth;
     FirebaseFirestore db;
-    
+
     String anuncioId, usuarioId, titulo, descripcion;
-    
+
     boolean isUploading = false;
 
     @Override
@@ -43,41 +48,50 @@ public class EditAnuncioFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentEditAnuncioBinding.inflate(inflater, container, false);
-        
+
+        // Instancias
         db = FirebaseFirestore.getInstance();
         activity = (MainActivity) getActivity();
         auth = FirebaseAuth.getInstance();
-        
+
+        // Se recogen los datos del Bundle
         if(getArguments() != null){
             anuncioId = getArguments().getString("id");
             usuarioId = getArguments().getString("userId");
             titulo = getArguments().getString("titulo");
             descripcion = getArguments().getString("descripcion");
         }
-        
+
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Se ponen los datos del Bundle en los EditText
         binding.editTitulo.setText(titulo);
         binding.editDescripcion.setText(descripcion);
         
         binding.btnConfirmEdit.setOnClickListener(this);
-        
+
+        // Llamada a los metodos
         addTextWatchers();
         checkForChanges();
     }
-    
+
+    /*
+        Metodo que se encarga de añadir los TextWatcher
+        Esto sirve para evitar que sin modificar ningun campo los usuarios puedan hacer un update
+        Y evitar cargas en la bd
+     */
     private void addTextWatchers(){
         CustomTextWatcher textWatcher = new CustomTextWatcher(this::checkForChanges);
         
         binding.editTitulo.addTextChangedListener(textWatcher);
         binding.editDescripcion.addTextChangedListener(textWatcher);
     }
-    
+
     private void checkForChanges(){
         String currentTitulo = binding.editTitulo.getText().toString().trim();
         String currentDescripcion = binding.editDescripcion.getText().toString().trim();
@@ -86,7 +100,7 @@ public class EditAnuncioFragment extends Fragment implements View.OnClickListene
         
         binding.btnConfirmEdit.setEnabled(hasChanges);
     }
-    
+
     private boolean validarCampos(){
         ValidarFormularios validarFormularios = new ValidarFormularios();
         
@@ -95,21 +109,21 @@ public class EditAnuncioFragment extends Fragment implements View.OnClickListene
                 binding.editDescripcion
         );
     }
-    
+
     private void aplicarEdicion(){
         if(!validarCampos()){
             return;
         }
-        
+
         binding.btnConfirmEdit.setClickable(false);
-        
+
         String cadenaTitulo = binding.editTitulo.getText().toString().trim();
         String cadenaDescripcion = binding.editDescripcion.getText().toString().trim();
-        
+
         Map<String, Object> anuncio = new HashMap<>();
         anuncio.put("titulo", cadenaTitulo);
         anuncio.put("descripcion", cadenaDescripcion);
-        
+
         db.collection("anuncios").document(anuncioId)
                 .update(anuncio)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -28,13 +28,18 @@ import java.util.List;
 
 public class MyPostsFragment extends Fragment {
 
+    /*
+        === MY POSTS FRAGMENT ===
+        En esta clase se ven los posts creados por el usuario registrado
+     */
+
     FragmentMyPostsBinding binding;
     MainActivity activity;
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private FirebaseAuth auth;
-    private PostAdapter postAdapter;
-    private List<Post> postList;
+    FirebaseFirestore db;
+    FirebaseStorage storage;
+    FirebaseAuth auth;
+    PostAdapter postAdapter;
+    List<Post> postList;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,12 +55,18 @@ public class MyPostsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
-        activity = (MainActivity) getActivity(); 
 
+        // Instancias
+        activity = (MainActivity) getActivity();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
+
+        /*
+            - Nueva lista de posts
+            - Se crea el adapter con el onClick
+            - Se añade el adapter al recycler
+         */
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(postList, storage, new PostAdapter.OnItemClickListener() {
             @Override
@@ -63,15 +74,17 @@ public class MyPostsFragment extends Fragment {
                 openPostDetail(post);
             }
         });
-
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(postAdapter);
 
+        // Llamada al metodo
         loadMyPosts();
     }
 
+    // Metodo para obtener los posts del usuario logeado
     private void loadMyPosts() {
         String currentUserId = auth.getCurrentUser().getUid();
+        // Se obtienen los posts donde userId es el id del usuario logeado en la app
         db.collection("posts")
                 .whereEqualTo("userId", currentUserId)
                 .get()
@@ -80,6 +93,7 @@ public class MyPostsFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             postList.clear();
+                            // Fecha de hoy para controlar la visibilidad de los posts
                             Date today = new Date();
                             for(QueryDocumentSnapshot document : task.getResult()){
                                 String id = document.getId();
@@ -92,15 +106,19 @@ public class MyPostsFragment extends Fragment {
                                 boolean material = document.getBoolean("materialNecesario");
                                 String imageUrl = document.getString("imageUrl");
 
+                                // Si el post pasa la fecha de hoy no se muestra
                                 if(fecha != null && !fecha.before(today)){
                                     Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
+                                    // Se añaden algunos datos mas sobre el post
                                     db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
                                         String nombreAutor = userDoc.getString("nombre");
                                         String apellidoAutor = userDoc.getString("apellido");
                                         post.setNombreAutor(nombreAutor);
                                         post.setApellidoAutor(apellidoAutor);
+                                        // Se añade a la lista
                                         postList.add(post);
+                                        // Se notifica al adapter para cambiar el recycler
                                         postAdapter.notifyDataSetChanged();
                                     });
                                 }
@@ -109,8 +127,10 @@ public class MyPostsFragment extends Fragment {
                     }
                 });
     }
-    
+
+    // Metodo para abrir los detalles del post
     private void openPostDetail(Post post){
+        // Se crea un Bundle para para los datos a la siguiente pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", post.getId());
         bundle.putString("userId", post.getUserId());

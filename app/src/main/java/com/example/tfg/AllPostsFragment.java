@@ -31,13 +31,19 @@ import java.util.List;
 import java.util.Map;
 
 public class AllPostsFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === ALL POSTS FRAGMENT ===
+        Esta clase se encarga de traer todos los posts de Firebase y mostrarlos
+        en el recycler View
+     */
     
     private FirebaseFirestore db;
     private FirebaseStorage storage;
     private List<Post> postList;
     private PostAdapter postAdapter;
-    MainActivity activity;
-    FragmentAllPostsBinding binding;
+    private MainActivity activity;
+    private FragmentAllPostsBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,11 +59,17 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
-        activity = (MainActivity) requireActivity(); 
 
+        // Instancias
+        activity = (MainActivity) requireActivity();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
+
+        /*
+            - Nueva lista de posts
+            - Se crea el adapter con el onClick
+            - Se añade el adapter al recycler
+         */
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(postList, storage, new PostAdapter.OnItemClickListener() {
             @Override
@@ -65,23 +77,31 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                 openPostDetail(post);
             }
         });
-        
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(postAdapter);
 
         binding.btnNewPost.setOnClickListener(this);
-        binding.btnTest.setOnClickListener(this);
-        
+
+        // Comentado para la presentacion si fuese necesario probar las reglas de la BD
+        //binding.btnTest.setOnClickListener(this);
+
+        // Llamada al metodo para traer los posts
         postsFromFirebase();
     }
 
     private void postsFromFirebase(){
+        // Se obtienen los posts
         db.collection("posts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
                     postList.clear();
+                    /*
+                        Se guarda la fecha de hoy y luego se compara con la del post
+                        Si la fecha del post es anterior a la de hoy no se añade
+                     */
                     Date today = new Date();
+                    // Por cada documento se guarda la informacion
                     for(QueryDocumentSnapshot document : task.getResult()){
                         String id = document.getId();
                         String userId = document.getString("userId");
@@ -96,6 +116,7 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                         if(fecha != null && !fecha.before(today)){
                             Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
+                            // Nos traemos otros datos del usuario que creo el post
                             db.collection("usuarios").document(userId).get().addOnSuccessListener(userDoc -> {
                                 String nombreAutor = userDoc.getString("nombre");
                                 String apellidoAutor = userDoc.getString("apellido");
@@ -111,7 +132,12 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
-    
+
+    /*
+    ====================================================================================
+        ESTE METODO ESTA COMENTADO PARA PROBAR EN LA PRESENTACION SI FUESE NECESARIO
+        LAS REGLAS DE LA BASE DE DATOS DE FIREBASE
+    ====================================================================================
     private void intentoUpdatePostUsuarioDistinto(){
         String titulo = "nuevo titulo de Post";
         Map<String, Object> postUpdate = new HashMap<>();
@@ -130,9 +156,11 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                         Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-    
+    }*/
+
+    // Metodo para abrir los detalles del post
     private void openPostDetail(Post post){
+        // Se crea un Bundle y se pasan los datos a la siguiente pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", post.getId());
         bundle.putString("userId", post.getUserId());
@@ -162,9 +190,10 @@ public class AllPostsFragment extends Fragment implements View.OnClickListener {
                 activity.goToFragment(new NewPostFragment(), R.id.newpostfragment);    
             }
         }
-        
+
+        /*
         if(i == R.id.btnTest){
             intentoUpdatePostUsuarioDistinto();
-        }
+        }*/
     }
 }

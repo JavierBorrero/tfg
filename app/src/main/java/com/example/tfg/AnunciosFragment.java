@@ -15,6 +15,12 @@ import com.example.tfg.utils.adapters.AnunciosViewPagerAdapter;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class AnunciosFragment extends Fragment {
+
+    /*
+        === ANUNCIOS FRAGMENT ===
+        Esta clase se encarga de contener el TabLayout y el ViewPager para la muestra
+        de los otros fragmentos
+     */
     
     FragmentAnunciosBinding binding;
 
@@ -34,9 +40,11 @@ public class AnunciosFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Objeto del adapter para el AnuncioViewPager y se pone el adapter
         AnunciosViewPagerAdapter adapter = new AnunciosViewPagerAdapter(this);
         binding.viewPager.setAdapter(adapter);
-        
+
+        // Se crea el TabLayoutMediator para separar en Todos los anuncios y Mis anuncios
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             switch (position){
                 case 0:

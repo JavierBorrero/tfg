@@ -20,6 +20,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class SignInFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === SIGN IN FRAGMENT ===
+        Esta clase se encarga de iniciar sesion a los usuarios
+     */
     
     private FirebaseAuth mAuth;
     
@@ -28,6 +33,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     EditText email, password;
     
     MainActivity activity;
+
+    boolean isUploading = false;
     
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,13 +45,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Instancias
         mAuth = FirebaseAuth.getInstance();
-        activity = (MainActivity) getActivity(); 
-        
+        activity = (MainActivity) getActivity();
+
+        // onClicks
         binding.btnInicioSesion.setOnClickListener(this);
         binding.btnIrRegistro.setOnClickListener(this);
         binding.recuperarContrasena.setOnClickListener(this);
-        
+
         email = binding.fieldEmail;
         password = binding.fieldPassword;
     }
@@ -53,25 +63,31 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     public void onStart(){
         super.onStart();
 
+        // Si el usuario esta logeado se le pasa a la siguiente pantalla
         if (mAuth.getCurrentUser() != null) {
-            onAuthSuccess(mAuth.getCurrentUser());
+            onAuthSuccess();
         }
     }
 
+    // Metodo para iniciar sesion
     private void inicioSesion(){
+        // Si la validacion falla no se hace nada
         if(!validarCampos()){
             return;
         }
 
+        binding.btnInicioSesion.setClickable(false);
+
+        // Se guardan los datos en variables
         String cadenaEmail = email.getText().toString();
         String cadenaPassword = password.getText().toString();
 
+        // Se inicia sesion con FirebaseAuth
         mAuth.signInWithEmailAndPassword(cadenaEmail, cadenaPassword).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    onAuthSuccess(user);
+                    onAuthSuccess();
                 }else{
                     Toast.makeText(getContext(), task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -79,8 +95,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    // --- Funcion para validar los campos del log in ---
+    // Metodo para validar los campos del login
     private boolean validarCampos(){
+        // Objeto de la clase ValidarFormularios y llamada al metodo
         ValidarFormularios validarFormularios = new ValidarFormularios();
         
         return validarFormularios.validarInicioSesion(
@@ -89,10 +106,24 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         );
     }
 
-    private void onAuthSuccess(FirebaseUser user){
+    // Metodo para comprobar si el login sale bien
+    private void onAuthSuccess(){
+        // Si sale bien se salta de pantalla
         if(activity != null){
             activity.goToFragment(new PostsFragment(), R.id.postsfragment);
         }
+    }
+
+    // Metodo para desactivar el boton para evitar dobleClick
+    private void disableButtonForDelay(long delayMillis){
+        binding.btnInicioSesion.setEnabled(false);
+        binding.btnInicioSesion.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.btnInicioSesion.setEnabled(true);
+                isUploading = false;
+            }
+        }, delayMillis);
     }
     
     @Override
@@ -100,7 +131,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         int i = view.getId();
         
         if(i == R.id.btnInicioSesion){
-            inicioSesion();
+            if(!isUploading){
+                isUploading = true;
+                disableButtonForDelay(1000);
+                inicioSesion();
+            }
         }
         
         if(i == R.id.btnIrRegistro){

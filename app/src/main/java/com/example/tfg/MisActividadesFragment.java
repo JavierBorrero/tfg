@@ -30,14 +30,19 @@ import java.util.Date;
 import java.util.List;
 
 public class MisActividadesFragment extends Fragment {
+
+    /*
+        === MIS ACTIVIDADES FRAGMENT ===
+        En esta clase se ve a que actividades esta apuntado el usuario registrado
+     */
     
-    private FragmentMisActividadesBinding binding;
-    private MainActivity activity;
-    private FirebaseAuth auth;
-    private FirebaseFirestore db;
-    private PostAdapter postAdapter;
-    private List<Post> postsList = new ArrayList<>();
-    private FirebaseStorage storage;
+    FragmentMisActividadesBinding binding;
+    MainActivity activity;
+    FirebaseAuth auth;
+    FirebaseFirestore db;
+    PostAdapter postAdapter;
+    List<Post> postsList = new ArrayList<>();
+    FirebaseStorage storage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,12 +58,17 @@ public class MisActividadesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Instancias
         activity = (MainActivity) getActivity(); 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
-        
+
+        /*
+            - Se crea el adapter con el onClick
+            - Se añade el adapter al recycler
+         */
         binding.recyclerMisActividades.setLayoutManager(new LinearLayoutManager(getContext()));
         postAdapter = new PostAdapter(postsList, storage, new PostAdapter.OnItemClickListener() {
             @Override
@@ -67,13 +77,16 @@ public class MisActividadesFragment extends Fragment {
             }
         });
         binding.recyclerMisActividades.setAdapter(postAdapter);
-        
+
+        // Llamada al metodo
         usuarioActividades();
     }
-    
+
+    // Metodo para obtener las actividades a las que esta apuntado un usuario
     private void usuarioActividades(){
         String currentUserId = auth.getCurrentUser().getUid();
-        
+
+        // Busqueda en la coleccion de posts donde el userId este en usuariosRegistrados
         db.collection("posts")
                 .whereEqualTo("usuariosRegistrados." + currentUserId, true)
                 .get()
@@ -82,8 +95,10 @@ public class MisActividadesFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             postsList.clear();
+                            // Se guarda la fecha de hoy para controlar que posts se muestran o no
                             Date today = new Date();
                             for(QueryDocumentSnapshot document : task.getResult()){
+                                // Por cada documento se guardan los datos
                                 String id = document.getId();
                                 String userId = document.getString("userId");
                                 String titulo = document.getString("titulo");
@@ -94,6 +109,7 @@ public class MisActividadesFragment extends Fragment {
                                 boolean material = document.getBoolean("materialNecesario");
                                 String imageUrl = document.getString("imageUrl");
 
+                                // Si el post pasa de la fecha de hoy no se muestra
                                 if(fecha != null && !fecha.before(today)){
                                     Post post = new Post(id, userId, titulo, descripcion, localizacion, fecha, numeroPersonas, material, imageUrl);
 
@@ -102,7 +118,9 @@ public class MisActividadesFragment extends Fragment {
                                         String apellidoAutor = userDoc.getString("apellido");
                                         post.setNombreAutor(nombreAutor);
                                         post.setApellidoAutor(apellidoAutor);
+                                        // Se añade a la lista
                                         postsList.add(post);
+                                        // Se notifica al recycler
                                         postAdapter.notifyDataSetChanged();
                                     });
                                 }
@@ -118,7 +136,9 @@ public class MisActividadesFragment extends Fragment {
                 });
     }
 
+    // Metodo para abrir los detalles del post
     private void openPostDetail(Post post){
+        // Bundle para pasar los datos a la otra pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", post.getId());
         bundle.putString("userId", post.getUserId());

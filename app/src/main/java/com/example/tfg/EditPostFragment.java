@@ -45,6 +45,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EditPostFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === EDIT POST FRAGMENT ===
+        Esta clase se encarga de editar los datos del  post
+     */
     
     FragmentEditPostBinding binding;
     MainActivity activity;
@@ -63,12 +68,14 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
     
     boolean isUploading = false;
 
+    // Esto se encarga junto con el Intent de recoger la foto de la galeria del usuario
     private final ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if(result.getResultCode() == Activity.RESULT_OK){
                         if (result.getData() != null) {
+                            // Se guarda la foto en el Uri y se pone en la foto previa
                             uri = result.getData().getData();
                             binding.fotoPrevia.setImageURI(uri);
                             checkForChanges();
@@ -86,12 +93,14 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentEditPostBinding.inflate(inflater, container, false);
-        
+
+        // Instancias
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         activity = (MainActivity) getActivity();
 
+        // Se recogen los datos del Bundle
         if(getArguments() != null){
             postId = getArguments().getString("id");
             postUserId = getArguments().getString("userId");
@@ -117,27 +126,36 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Se ponen los textos del Bundle en los EditText
         binding.editTitulo.setText(titulo);
         binding.editDescripcion.setText(descripcion);
         binding.editLocalizacion.setText(localizacion);
         binding.editFechaHora.setText(fechaString);
         binding.editNumeroPersonas.setText(String.valueOf(numeroPersonas));
         binding.editMaterial.setChecked(materialNecesario);
-        
+
+        // Si tiene imagen o no
         if(imageUrl != null){
             Glide.with(binding.fotoPrevia.getContext()).load(imageUrl).into(binding.fotoPrevia);
         }else{
             Glide.with(binding.fotoPrevia.getContext()).load(R.drawable.icon_no_image).into(binding.fotoPrevia);
         }
 
+        // onClicks
         binding.btnConfirmEdit.setOnClickListener(this);
         binding.editFechaHora.setOnClickListener(this);
         binding.editImagen.setOnClickListener(this);
-        
+
+        // Llamada a los metodos
         addTextWatchers();
         checkForChanges();
     }
-    
+
+    /*
+        Metodo que se encarga de añadir los TextWatcher
+        Esto sirve para evitar que sin modificar ningun campo los usuarios puedan hacer un update
+        Y evitar cargas en la bd
+     */
     private void addTextWatchers(){
         CustomTextWatcher textWatcher = new CustomTextWatcher(this::checkForChanges);
         
@@ -147,9 +165,11 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
         binding.editNumeroPersonas.addTextChangedListener(textWatcher);
         binding.editMaterial.setOnCheckedChangeListener(new CustomOnCheckedChangeListener(this::checkForChanges));
     }
-    
+
+    // Metodo que se encarga de comprobar si algun campo ha tenido modificaciones
     private void checkForChanges(){
-        
+
+        // Se guarda el texto actual en variables
         String currentTitulo = binding.editTitulo.getText().toString().trim();
         String currentDescripcion = binding.editDescripcion.getText().toString().trim();
         String currentLocalizacion = binding.editLocalizacion.getText().toString().trim();
@@ -167,7 +187,8 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
         }
         
         boolean currentMaterial = binding.editMaterial.isChecked();
-        
+
+        // Se compara con el texto original y si cambia se pone en enable el boton del update
         boolean hasChanges = !currentTitulo.equals(titulo) ||
                 !currentDescripcion.equals(descripcion) ||
                 !currentLocalizacion.equals(localizacion) ||
@@ -179,8 +200,13 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
         binding.btnConfirmEdit.setEnabled(hasChanges);
     }
 
+    // Metodo para obtener la fecha y hora
     private void obtenerFechaYHora(){
 
+        /*
+            Despliega un DatePickerDialog y luego un TimePickerDialog
+            para poder seleccionar fecha y hora
+         */
         final Calendar c = Calendar.getInstance();
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH);
@@ -199,6 +225,7 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
 
                         Date date = calendar.getTime();
 
+                        // Se guarda le fecha seleccionada
                         firebaseTimeStamp = new Timestamp(date);
 
                         binding.editFechaHora.setText(dayOfMonth+"/"+(month+1)+"/"+year+" - "+hourOfDay+":"+minute);
@@ -209,17 +236,21 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
             }
         }, mYear, mMonth, mDay);
 
+        // Fecha minima para evitar que no se pueda escoger una fecha menor al dia de hoy
         datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
         datePickerDialog.show();
 
     }
 
+    // Intent para obtener la imagen de la galeria de un usuario
     private void lanzarIntentObtenerImagen(){
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryActivityResultLauncher.launch(intent);
     }
-    
+
+    // Validacion de campos del EditPost
     private boolean validarCampos(){
+        // Objeto de la clase ValidarFormularios y se llama al metodo para validar
         ValidarFormularios validarFormularios = new ValidarFormularios();
         
         return validarFormularios.validarEditarPost(
@@ -231,28 +262,38 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
                 usuariosRegistrados
         );
     }
-    
+
+    // Metodo para aplicar la Edicion del Post
     private void aplicarEdicion(){
+        // Si la validacion falla no se hace nada
         if(!validarCampos()){
             return;
         }
 
+        // Se quita el clickable para evitar dobleClick y doble subida
         binding.btnConfirmEdit.setClickable(false);
-        
+
+        // Se guardan los datos en variables
         String cadenaTitulo = binding.editTitulo.getText().toString().trim();
         String cadenaDescripcion = binding.editDescripcion.getText().toString().trim();
         String cadenaLocalizacion = binding.editLocalizacion.getText().toString().trim();
         int numPersonas = Integer.parseInt(binding.editNumeroPersonas.getText().toString());
         boolean materialNecesario = binding.editMaterial.isChecked();
-        
+
+        /*
+            Si se ha puesto una imagen se sube la imagen y luego se publica la edicion
+            Si no se publica directamente la edicion
+         */
         if(uri != null){
             subirImagenyPublicarEdicion(postId, postUserId, cadenaTitulo, cadenaDescripcion, cadenaLocalizacion, numPersonas, materialNecesario, uri);
         }else{
             publicarEdicion(postId, postUserId, cadenaTitulo, cadenaDescripcion, cadenaLocalizacion, numPersonas, materialNecesario, null);
         }
     }
-    
+
+    // Metodo que se encarga de subir la edicion
     private void publicarEdicion(String documentId, String postUserId, String titulo, String descripcion, String localizacion, int personas, boolean material, @Nullable String url){
+        // Se crea el mapa con los datos
         Map<String, Object> post = new HashMap<>();
         post.put("userId", postUserId);
         post.put("titulo", titulo);
@@ -260,17 +301,20 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
         post.put("localizacion", localizacion);
         post.put("numeroPersonas", personas);
         post.put("materialNecesario", material);
-        
+
+        // Si hay fecha nueva se pone la nueva y si no se pone la antigua
         if(firebaseTimeStamp != null){
             post.put("fecha", firebaseTimeStamp);
         }else{
             post.put("fecha", oldFirebaseTimeStamp);
         }
-        
+
+        // Si hay imagen se guarda
         if(url != null){
             post.put("imageUrl", url);
         }
-        
+
+        // Se hace el update
         db.collection("posts").document(documentId)
                 .update(post)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -287,16 +331,20 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
                     }
                 });
     }
-    
+
+    // En caso de que el post tenga imagen se sube
     private void subirImagenyPublicarEdicion(String documentId, String postUserId, String titulo, String descripcion, String localizacion, int personas, boolean material, @Nullable Uri file){
         if(file != null){
+            // Referencia a la ubicacion de la foto
             StorageReference reference = storageReference.child("images/"+postUserId+"/user_posts/"+file.getLastPathSegment());
             reference.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // Se coge la url de la referencia
                     reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            // Se guarda en una variable y se pasa al metodo publicarEdicion
                             String imageUrl = uri.toString();
                             publicarEdicion(documentId, postUserId, titulo, descripcion, localizacion, personas, material, imageUrl);
                         }
@@ -316,15 +364,18 @@ public class EditPostFragment extends Fragment implements View.OnClickListener {
             });
         }
     }
-    
+
+    // Metodo para mandar correos al actualizar el post
     private void correoActualizar(ArrayList<String> emailList){
+        // Se envia un correo por cada email en el emailList
         EnviarCorreos enviarCorreos = new EnviarCorreos();
         for(String email : emailList){
             enviarCorreos.enviarCorreoEditarPost(getContext(), postUserId, email, titulo);
         }
         enviarCorreos.mostrarPopupMensaje(getContext(), "Se ha enviado un mensaje a los usuarios sobre la actualizacion de la actividad");
     }
-    
+
+    // Metodo para desactivar el boton despues de confirmar el update
     private void disableButtonForDelay(long delayMillis){
         binding.btnConfirmEdit.setEnabled(false);
         binding.btnConfirmEdit.postDelayed(new Runnable() {

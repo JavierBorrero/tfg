@@ -29,18 +29,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DescargarPdf {
-    
+
+    /*
+        === DESCARGAR PDF ===
+        Esta clase descarga en un PDF en el telefono los datos de la actividad
+     */
+
+    // Metodo para crear el PDF de la actividad
     public void createPdf(Context context, String titulo, String descripcion, String localizacion, String fecha, String numeroPersonas, String materialNecesario, String nombreAutor) {
         try {
+            // Ruta donde se va a guardar el PDF
             String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/PostDetails.pdf";
             File file = new File(path);
             file.getParentFile().mkdirs();
-            
+
+            // Se crea un PDFWriter y el documento PDF
             PdfWriter writer = new PdfWriter(new FileOutputStream(file));
             PdfDocument pdfDoc = new PdfDocument(writer);
             Document document = new Document(pdfDoc, PageSize.A4);
             document.setMargins(36, 36, 36, 36);
-            
+
+            // Se crea el titulo del PDF
             Paragraph title = new Paragraph(titulo)
                     .setFont(PdfFontFactory.createFont("Helvetica-Bold"))
                     .setFontSize(24)
@@ -48,7 +57,8 @@ public class DescargarPdf {
                     .setBold()
                     .setMarginBottom(20);
             document.add(title);
-            
+
+            // Se crea el cuerpo del PDF
             Paragraph content = new Paragraph()
                     .setFontSize(12)
                     .add("Descripción: " + descripcion + "\n\n")
@@ -58,12 +68,14 @@ public class DescargarPdf {
                     .add("Material necesario: " + materialNecesario + "\n\n")
                     .add("Autor: " + nombreAutor);
             document.add(content);
-            
+
+            // Se cierra el documento
             document.close();
 
             Toast.makeText(context, "PDF generado exitosamente en " + path, Toast.LENGTH_SHORT).show();
+
         } catch (Exception e) {
-            Log.e("PDF Creation Error", "Error al crear el PDF: ", e);
+            // En caso de error se muestra un mensaje
             Toast.makeText(context, "Error al crear el PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }

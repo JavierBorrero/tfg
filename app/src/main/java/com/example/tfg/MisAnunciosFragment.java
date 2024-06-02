@@ -28,6 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MisAnunciosFragment extends Fragment {
+
+    /*
+        === MIS ANUNCIOS FRAGMENT ===
+        En esta clase se ven los anuncios creados por el usuario registrado
+     */
     
     FragmentMisAnunciosBinding binding;
     FirebaseFirestore db;
@@ -35,7 +40,7 @@ public class MisAnunciosFragment extends Fragment {
     FirebaseAuth auth;
     AnuncioAdapter anuncioAdapter;
     List<Anuncio> anunciosList;
-    private MainActivity activity;
+    MainActivity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,12 +56,18 @@ public class MisAnunciosFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Instancias
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
         activity = (MainActivity) getActivity(); 
-        
+
+        /*
+            - Nueva lista de anuncios
+            - Se crea el adapter con el onClick
+            - Se añade el adapter al recycler
+         */
         anunciosList = new ArrayList<>();
         anuncioAdapter = new AnuncioAdapter(anunciosList, storage, new AnuncioAdapter.OnItemClickListener() {
             @Override
@@ -64,15 +75,17 @@ public class MisAnunciosFragment extends Fragment {
                 openAnuncioDetail(anuncio);
             }
         });
-        
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(anuncioAdapter);
-        
+
+        // Llamada al metodo
         loadMisAnuncios();
     }
-    
+
+    // Se cargan los anuncios del usuario por el userId
     private void loadMisAnuncios(){
         String currentUserId = auth.getCurrentUser().getUid();
+        // Se busca entre los anuncios donde el userId sea el del usuario logeado
         db.collection("anuncios")
                 .whereEqualTo("userId", currentUserId)
                 .get()
@@ -82,6 +95,7 @@ public class MisAnunciosFragment extends Fragment {
                         if(task.isSuccessful()){
                             anunciosList.clear();
                             for(QueryDocumentSnapshot document : task.getResult()){
+                                // Por cada documento se guardan los datos
                                 String id = document.getId();
                                 String userId = document.getString("userId");
                                 String titulo = document.getString("titulo");
@@ -90,13 +104,16 @@ public class MisAnunciosFragment extends Fragment {
                                 Anuncio anuncio = new Anuncio(id, userId, titulo, descripcion);
                                 
                                 db.collection("usuarios").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    // Se añaden algunos datos extra sobre el autor
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         String nombreAutor = documentSnapshot.getString("nombre");
                                         String apellidoAutor = documentSnapshot.getString("apellido");
                                         anuncio.setNombreAutor(nombreAutor);
                                         anuncio.setApellidoAutor(apellidoAutor);
+                                        // Se añade el anuncio a la lista
                                         anunciosList.add(anuncio);
+                                        // Se notifica al adaptador para modificar el recyler
                                         anuncioAdapter.notifyDataSetChanged();
                                     }
                                 });
@@ -105,8 +122,10 @@ public class MisAnunciosFragment extends Fragment {
                     }
                 });
     }
-    
+
+    // Metodo para pasar a los datos del anuncio
     private void openAnuncioDetail(Anuncio anuncio){
+        // Bundle para pasar los datos a la siguiente pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", anuncio.getId());
         bundle.putString("userId", anuncio.getUserId());

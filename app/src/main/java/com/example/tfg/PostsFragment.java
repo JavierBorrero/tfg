@@ -14,6 +14,12 @@ import com.example.tfg.utils.adapters.PostsViewPagerAdapter;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class PostsFragment extends Fragment {
+
+    /*
+        === POSTS FRAGMENT ===
+        Esta clase se encarga de contener el TabLayout y el ViewPager para la muestra
+        de los otros fragmentos
+     */
     
     FragmentPostsBinding binding;
 
@@ -31,10 +37,12 @@ public class PostsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Objeto del adapter para el PostViewPager y se pone el adapter
         PostsViewPagerAdapter adapter = new PostsViewPagerAdapter(this);
         binding.viewPager.setAdapter(adapter);
 
+        // Se crea el TabLayoutMediator para separar en Todos los Posts y Mis Posts
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
             switch (position) {
                 case 0:

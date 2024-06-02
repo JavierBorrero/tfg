@@ -27,13 +27,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllAnunciosFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === ALL ANUNCIOS FRAGMENT ===
+        Esta clase se encarga de traer los datos de firebase de todos los anuncios
+        y mostrarlos en el recyclerView
+     */
     
-    FragmentAllAnunciosBinding binding;
-    MainActivity activity;
-    FirebaseFirestore db;
-    FirebaseStorage storage;
-    List<Anuncio> anunciosList;
-    AnuncioAdapter anuncioAdapter;
+    private FragmentAllAnunciosBinding binding;
+    private MainActivity activity;
+    private FirebaseFirestore db;
+    private FirebaseStorage storage;
+    private List<Anuncio> anunciosList;
+    private AnuncioAdapter anuncioAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,13 +55,18 @@ public class AllAnunciosFragment extends Fragment implements View.OnClickListene
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
-        activity = (MainActivity) requireActivity();
 
+        // Instancias
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
+        activity = (MainActivity) requireActivity();
+
+        /*
+            - Nueva lista de anuncios
+            - Se crea el adapter con el onClick
+            - Se añade el adapter al recycler
+         */
         anunciosList = new ArrayList<>();
-        
         anuncioAdapter = new AnuncioAdapter(anunciosList, storage, new AnuncioAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Anuncio anuncio) {
@@ -67,16 +78,19 @@ public class AllAnunciosFragment extends Fragment implements View.OnClickListene
         binding.recyclerView.setAdapter(anuncioAdapter);
         
         binding.btnNewAnuncio.setOnClickListener(this);
-        
+
+        // Llamada metodo para traer los anuncios de Firebase
         anunciosFromFirebase();
     }
     
     private void anunciosFromFirebase(){
+        // Se obtienen los anuncios
         db.collection("anuncios").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
                     anunciosList.clear();
+                    // Por cada documento se guarda la informacion
                     for(QueryDocumentSnapshot document : task.getResult()){
                         String id = document.getId();
                         String userId = document.getString("userId");
@@ -84,7 +98,8 @@ public class AllAnunciosFragment extends Fragment implements View.OnClickListene
                         String descripcion = document.getString("descripcion");
                         
                         Anuncio anuncio = new Anuncio(id, userId, titulo, descripcion);
-                        
+
+                        // Nos traemos otros datos del usuario que creo el anuncio
                         db.collection("usuarios").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -101,8 +116,10 @@ public class AllAnunciosFragment extends Fragment implements View.OnClickListene
             }
         });
     }
-    
+
+    // Metodo para abrir los datos del anuncio
     private void openAnuncioDetail(Anuncio anuncio){
+        // Se crea un Bundle y se pasan los datos a la siguiente pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", anuncio.getId());
         bundle.putString("userId", anuncio.getUserId());

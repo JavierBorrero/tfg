@@ -32,18 +32,23 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class AccountFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === ACCOUNT FRAGMENT ===
+        Esta clase muestra los datos del usuario que ha iniciado sesion en la aplicacion
+     */
     
-    FirebaseAuth auth;
-    FirebaseFirestore db;
-    StorageReference storageReference;
-    MainActivity activity;
-    
-    FragmentAccountBinding binding;
-    
-    TextView email, nombre, apellidos, telefono;
-    ImageView imagen;
-    
-    String userId;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private StorageReference storageReference;
+    private MainActivity activity;
+
+    private FragmentAccountBinding binding;
+
+    private TextView email, nombre, apellidos, telefono;
+    private ImageView imagen;
+
+    private String userId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +64,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Asignar los TextView a variables para que el codigo sea mas legible
         email = binding.textEmail;
         nombre = binding.textNombre;
         apellidos = binding.textApellidos;
@@ -69,37 +75,53 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         // Instancias
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
+
+        // getActivity para viajar entre pantallas
         activity = (MainActivity) getActivity();
 
+        // Guardamos el Id del usuario logeado en una variable
         userId = auth.getCurrentUser().getUid();
-        
-        storageReference = FirebaseStorage.getInstance().getReference();
-        
+
+        // Llamada para obtener los datos del usuario
         obtenerDatosUsuario();
-        
+
+        // onClicks
         binding.btnLogout.setOnClickListener(this);
         binding.btnMisActividades.setOnClickListener(this);
         binding.btnEditProfile.setOnClickListener(this);
         binding.btnEliminarCuenta.setOnClickListener(this);
     }
-    
+
+    /*
+        === FUNCION OBTENER DATOS DEL USUARIO ===
+        Esta funcion obtiene los datos del usuario que ha iniciado sesion en la app
+     */
     private void obtenerDatosUsuario(){
+        // Referencia al documento del usuario por el userId
         DocumentReference docRef = db.collection("usuarios").document(userId);
 
+        // Se obtiene el documento
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                // Si existe el documento
                 if(documentSnapshot.exists()){
+                    // Se obtienen los datos del usuario
                     Usuario usuario = documentSnapshot.toObject(Usuario.class);
+                    // Se ponen los datos en los TextView
                     email.setText(usuario.getEmail());
                     nombre.setText(usuario.getNombre());
                     apellidos.setText(usuario.getApellido());
                     telefono.setText(String.valueOf(usuario.getTelefono()));
+                    // Se pone la foto de perfil del usuario dependiendo de si tiene o no
                     if(usuario.getImagePfpUrl() != null){
                         Glide.with(getContext()).load(usuario.getImagePfpUrl()).into(imagen);
                     }else{
                         Glide.with(getContext()).load(R.drawable.icon_person_profile).into(imagen);
                     }
+                }else{
+                    Toast.makeText(getContext(), "No existe el documento o error al obtener", Toast.LENGTH_SHORT).show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -108,17 +130,11 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-        
-        /*StorageReference reference = storageReference.child("images/"+userId+"/pfp/");
-        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Glide.with(imagen.getContext()).load(uri).into(imagen);
-            }
-        });*/
     }
-    
+
+    // Mostrar el primer Popup para eliminar la cuenta del usuario
     private void mostrarPrimerPopupEliminar(){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         
         builder.setTitle("Eliminar Usuario");
@@ -127,6 +143,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                // En caso de aceptar se pasa al segundo Popup
                 mostrarSegundoPopupEliminar();
             }
         });
@@ -141,7 +158,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    
+
+    // Mostrar el segundo Popup para eliminar la cuenta del usuario
     private void mostrarSegundoPopupEliminar(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         
@@ -151,6 +169,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                // En caso de aceptar se crea un objeto de la clase EliminarUsuario
+                // Y se llama al metodo eliminarUsuario
                 EliminarUsuario eliminarUsuario = new EliminarUsuario();
                 eliminarUsuario.eliminarUsuario(getContext(), userId);
             }

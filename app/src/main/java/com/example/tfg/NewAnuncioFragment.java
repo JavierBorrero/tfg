@@ -24,6 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NewAnuncioFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === NEW ANUNCIO FRAGMENT ===
+        Esta clase se encarga de crear nuevos anuncios
+     */
     
     FragmentNewAnuncioBinding binding;
     FirebaseAuth auth;
@@ -47,17 +52,21 @@ public class NewAnuncioFragment extends Fragment implements View.OnClickListener
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Instancias
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         activity = (MainActivity) getActivity();
-        
+
+        // Se guarda el userId en una variable
         userId = auth.getCurrentUser().getUid();
         
         binding.btnSubmitAnuncio.setOnClickListener(this);
     }
-    
+
+    // Metodo para validar los campos
     private boolean validarCampos(){
+        // Objeto de la clase ValidarFormularios y llamada al metodo
         ValidarFormularios validarFormularios = new ValidarFormularios();
         
         return validarFormularios.validarNuevoYEditarAnuncio(
@@ -65,22 +74,28 @@ public class NewAnuncioFragment extends Fragment implements View.OnClickListener
                 binding.fieldDescripcion
         );
     }
-    
+
+    // Metodo para publica el anuncio
     private void publicarAnuncio(){
+        // Si la validacion falla no se hace nada
         if(!validarCampos()){
             return;
         }
-        
+
+        // Se desactiva el boton para evitar doble click
         binding.btnSubmitAnuncio.setClickable(false);
-        
+
+        // Se guardan los datos en variables
         String cadenaTitulo = binding.fieldTitulo.getText().toString().trim();
         String cadenaDescripcion = binding.fieldDescripcion.getText().toString().trim();
 
+        // Se crea el map con los datos
         Map<String, Object> anuncio = new HashMap<>();
         anuncio.put("userId", userId);
         anuncio.put("titulo", cadenaTitulo);
         anuncio.put("descripcion", cadenaDescripcion);
-        
+
+        // Se sube el anuncio
         db.collection("anuncios").document()
                 .set(anuncio)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -98,6 +113,7 @@ public class NewAnuncioFragment extends Fragment implements View.OnClickListener
                 });
     }
 
+    // Metodo para desactivar el boton y evitar el doble click
     private void disableButtonForDelay(long delayMillis){
         binding.btnSubmitAnuncio.setEnabled(false);
         binding.btnSubmitAnuncio.postDelayed(new Runnable() {

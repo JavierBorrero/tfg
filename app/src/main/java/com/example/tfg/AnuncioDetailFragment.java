@@ -24,13 +24,20 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AnuncioDetailFragment extends Fragment implements View.OnClickListener {
+
+    /*
+        === ANUNCIO DETAIL FRAGMENT ===
+        Esta clase se encarga de mostrar los datos del anuncio
+        Ademas tiene algunos botones dependiendo de las caracteristicas que
+        pueda realizar el usuario que esta accediendo
+     */
     
-    FragmentAnuncioDetailBinding binding;
-    FirebaseAuth auth;
-    FirebaseFirestore db;
-    MainActivity activity;
-    
-    String anuncioId, anuncioUserId, userId, titulo, descripcion, nombreAutor, apellidoAutor, emailUsuarioAnuncio;
+    private FragmentAnuncioDetailBinding binding;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private MainActivity activity;
+
+    private String anuncioId, anuncioUserId, userId, titulo, descripcion, nombreAutor, apellidoAutor, emailUsuarioAnuncio;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,24 +47,26 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentAnuncioDetailBinding.inflate(inflater, container, false);
-        
+
+        // Instancias
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         activity = (MainActivity) getActivity();
-        
+
         if(getArguments() != null){
             anuncioId = getArguments().getString("id");
             anuncioUserId = getArguments().getString("userId");
             userId = auth.getCurrentUser().getUid();
         }
-        
+
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
+        // Se recogen los datos del Bundle
         if(getArguments() != null){
             anuncioId = getArguments().getString("id");
             anuncioUserId = getArguments().getString("userId");
@@ -66,9 +75,12 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
             nombreAutor = getArguments().getString("nombreAutor");
             apellidoAutor = getArguments().getString("apellidoAutor");
         }
-        
-        userId = auth.getCurrentUser().getUid();
-        
+
+        /*
+            Dependiendo de si el usuario es el dueño o no:
+            - Se muestra el boton de edicion y eliminar en caso de que sea el dueño
+            - Se muestra el boton de contactar en caso de no ser el dueño
+         */
         if(userId.equals(anuncioUserId)){
             binding.btnContactar.setVisibility(View.GONE);
             binding.btnEditarAnuncio.setVisibility(View.VISIBLE);
@@ -78,24 +90,29 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
             binding.btnEditarAnuncio.setVisibility(View.GONE);
             binding.btnEliminarAnuncio.setVisibility(View.GONE);
         }
-        
+
+        // Se ponen los textos a los TextView
         binding.detailTitulo.setText(titulo);
         binding.detailAutor.setText(String.format("%s %s", nombreAutor, apellidoAutor));
         binding.detailDescripcion.setText(descripcion);
-        
+
+        // onClicks
         binding.btnContactar.setOnClickListener(this);
         binding.btnEditarAnuncio.setOnClickListener(this);
         binding.btnEliminarAnuncio.setOnClickListener(this);
-        
+
+        // Metodo para obtener el email del dueño del anuncio
         obtenerEmailUsuarioAnuncio(anuncioUserId);
     }
     
     private void obtenerEmailUsuarioAnuncio(String anuncioUserId){
+        // Se obtiene el documento del usuario que es dueño del anuncio
         db.collection("usuarios").document(anuncioUserId)
                 .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()){
+                            // Se guarda el email en una variable
                             emailUsuarioAnuncio = documentSnapshot.getString("email");
                         }
                     }
@@ -106,12 +123,15 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
                     }
                 });
     }
-    
+
+    // Metodo para contactar al usuario por el anuncio
     private void contactarUsuarioPorAnuncio(){
+        // Objeto de la clase EnviarCorreo y llamada al metodo
         EnviarCorreos enviarCorreos = new EnviarCorreos();
         enviarCorreos.enviarCorreoContactarUsuarioAnuncio(getContext(), userId, emailUsuarioAnuncio, titulo);
     }
-    
+
+    // Metodo para eliminar el anuncio
     private void eliminarAnuncio(String anuncioId){
         db.collection("anuncios").document(anuncioId)
                 .delete()
@@ -130,7 +150,8 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
                     }
                 });
     }
-    
+
+    // Se muestra un Popup al eliminar el anuncio
     private void mostrarPopupEliminarAnuncio(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
@@ -147,8 +168,10 @@ public class AnuncioDetailFragment extends Fragment implements View.OnClickListe
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    
+
+    // Metodo para editar el anuncio
     private void openEditAnuncio(){
+        // Se crea un Bundle para pasar los datos a la siguiente pantalla
         Bundle bundle = new Bundle();
         bundle.putString("id", anuncioId);
         bundle.putString("userId", anuncioUserId);
